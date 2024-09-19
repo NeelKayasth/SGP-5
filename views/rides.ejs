@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="utf-8">
+  <title>02-search-2</title>
+  <meta content="Chernyh Mihail" name="author">
+  <meta content="GetRider" name="description">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="format-detection" content="telephone=no">
+  <meta content="IE=edge" http-equiv="X-UA-Compatible">
+  <link rel="stylesheet" href="/assets/css/uikit.min.css">
+  <link rel="stylesheet" href="/assets/css/all.min.css">
+  <link rel="stylesheet" href="/assets/css/datepicker.min.css">
+  <link rel="stylesheet" href="/assets/css/main.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.5.0/font/bootstrap-icons.min.css">
+
+  <style>
+
+     .search-result-item__info, 
+    .search-result-item__price {
+      font-size: 0.8rem;  
+    }
+    
+    .user-box__name {
+      font-size: 1rem;  
+    }
+    
+    .price-box__time {
+      font-size: 1rem;  
+    }   
+    
+   
+    
+
+    .search-result-item {
+      background-color: #f8f8f8;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 15px;
+    }
+    
+    .user-box__info {
+      font-size: 1.2rem;
+    }
+    
+    .list-info li {
+      margin-bottom: 10px;
+    }
+    
+    .price-box {
+      text-align: right;
+    }
+    
+    .current-price {
+      font-size: 0.5rem;
+      font-weight: bold;
+    }
+    
+    .search-result__info {
+      display: flex;
+      align-items: center;
+      background: #007bff; /* Blue background for the section */
+      color: #ffffff; /* White text color */
+      border-radius: 8px;
+      padding: 10px 15px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+      margin-bottom: 20px;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .search-result__info:hover {
+      background: #0056b3; /* Darker blue on hover */
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+  }
+  
+  .icon {
+      margin-right: 10px;
+      font-size: 1.5em;
+  }
+  
+  .info-text {
+      font-size: 1.2em;
+      font-weight: bold;
+  }
+  
+.search-list li {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.search-list li:hover {
+  background-color: #f1f1f1;
+}
+
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Hide default dropdown arrow in Webkit (Chrome, Safari) */
+.uk-select {
+  -webkit-appearance: none;  /* Hide the default arrow in Chrome and Safari */
+  -moz-appearance: none;     /* Hide the default arrow in Firefox */
+  appearance: none;          /* Standard property to hide the arrow */
+  background-color: transparent;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  padding: 8px 12px;
+  cursor: pointer;
+  width: 100%;
+  position: relative;
+  padding-right: 30px; /* Make room for the custom arrow */
+}
+
+/* Hide the default arrow in Internet Explorer */
+.uk-select::-ms-expand {
+  display: none;
+}
+
+/* Custom arrow */
+.custom-arrow {
+  content: '';
+  position: absolute;
+  right: 10px; /* Adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  font-size: 12px;
+  color: #555;
+  transition: transform 0.3s ease;
+}
+
+/* Rotate arrow when dropdown is open */
+.uk-select.active + .custom-arrow,
+.uk-select:focus + .custom-arrow,
+.uk-select:active + .custom-arrow {
+  transform: translateY(-50%) rotate(180deg);
+}
+
+/* Arrow symbol */
+.custom-arrow::after {
+  content: '▼';  /* Unicode character for down arrow */
+  font-size: 12px;
+  color: #555;
+}
+
+
+
+</style>
+</head>
+
+<body class="page-search page-search--result uk-background-muted">
+
+  <!-- Loader-->
+  <div id="page-preloader"><span
+      class="spinner border-t_second_b border-t_prim_a"></span></div>
+  <!-- Loader end-->
+
+  <div class="page-wrapper">
+    <header class="page-header page-header--search">
+      <div class="uk-container uk-container-expand">
+        <div class="page-header__inner">
+          <div class="page-header__logo">
+            <div class="logo"><a class="logo__link" href="/"><img
+                  class="logo__img" src="/assets/img/logo.png"
+                  alt="GetRider"></a></div>
+          </div>
+          <div class="page-header__menu">
+            <nav class="page-nav" data-uk-navbar>
+              <ul class="uk-navbar-nav">
+                <li><a href="/find-ride"> <img
+                      src="/assets/img/search.svg" data-uk-svg
+                      alt="search">Find a Ride</a>
+                  <!-- <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                      <li><a href="02-search-1.html">Find a Ride</a></li>
+                      <li><a href="02-search-2.html">Find a Ride Map</a></li>
+                      <li><a href="02-search-3.html">Find a Ride
+                          Result</a></li>
+                    </ul>
+                  </div> -->
+                </li>
+                <li><a href="/offer-ride"> <img
+                      src="/assets/img/car.svg" data-uk-svg alt="car">Offer a
+                    Ride</a></li>
+                <!-- <li><a href="03_blog-1.html"> <img
+                      src="/assets/img/news-paper.svg" data-uk-svg
+                      alt="news-paper">News</a>
+                  <div class="uk-navbar-dropdown">
+                    <ul class="uk-nav uk-navbar-dropdown-nav">
+                      <li><a href="03_blog-1.html">Blog list</a></li>
+                      <li><a href="04_blog-2.html">Blog grid</a></li>
+                      <li><a href="05_blog-post.html">Blog post</a></li>
+                    </ul>
+                  </div>
+                </li> -->
+                <li> <a href="/contact"> <img
+                      src="/assets/img/help2.svg" data-uk-svg
+                      alt="help2">Help</a></li>
+              </ul>
+            </nav>
+          </div>
+          <div class="page-header__phone"><a
+              class="uk-button uk-button-danger" href="tel:3457008800"> <img
+                src="/assets/img/call.svg" alt="call" data-uk-svg><span>+345
+                700 8800</span></a></div>
+          <div class="page-header__btn"> <a class="uk-button uk-button-danger"
+              href="#offcanvas" data-uk-toggle data-uk-icon="menu"></a></div>
+        </div>
+      </div>
+    </header>
+   
+        <!-- <div class="uk-background-muted">
+          <div class="main-search-section">
+            <div class="main-search-map"><iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d6054.772117557924!2d-73.78921662486367!3d40.643419580864624!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c2665781eeb7bb%3A0xd12a76664e19fa27!2zQmx1ZSBQYXJraW5nLCBRdWVlbnMsIE5ZIDExNDMwLCDQodCo0JA!5e0!3m2!1sru!2sua!4v1613820738356!5m2!1sru!2sua" loading="lazy"></iframe></div>
+          </div>
+        </div> -->
+        <div class="uk-background-muted" style="margin-top: 7%;">
+          <div class="main-search-section">
+            <div class="search-result">
+              <div class="search-result__info">
+                <span class="icon" data-uk-icon="search"></span>
+                <span class="info-text">My Rides</span>
+              </div>
+            
+              <div class="search-result__col">
+                <img src="/assets/img/ico-car.png" alt="icon">
+                <span><%= rides.length %> rides offered by you.</span> <!-- Number of rides from the database -->
+              </div>
+            
+              <div class="search-result__list">
+                <% if (rides.length > 0) { %>
+                  <% rides.forEach(ride => { %>
+                    <div class="search-result-item">
+                      <div class="search-result-item__info">
+                        <div class="user-box">
+                          <div class="user-box__avatar">
+                            <i class="bi bi-person-fill" style="font-size: 2.75rem; color: #333;"></i>
+                          </div>
+                          <div class="user-box__info">
+                            <div class="user-box__name"><%= ride.driver_name %></div>
+                            <div class="user-box__rating">
+                              <i class="fas fa-car"></i><b><%= ride.vehicle_type %></b>
+                            </div>
+                          </div>
+                        </div>
+                        <ul class="list-info">
+                          <li><img src="/assets/img/driver-service-1.png" alt="driver-service">
+                            <span><%= ride.seats_available %> seats available</span></li>
+                          <li><img src="/assets/img/driver-service-2.png" alt="driver-service">
+                            <span>Contact: <%= ride.contact_number %></span></li>
+                          <li><img src="/assets/img/driver-service-3.png" alt="driver-service">
+                            <span>Meeting Location: <%= ride.meeting_location %></span></li>
+                          <li><img src="/assets/img/driver-service-3.png" alt="driver-service">
+                            <span>Dropoff Location: <%= ride.dropoff_location %></span></li>
+                            <% if(ride.booked == 0) {%>
+                            <li><img src="/assets/img/driver-service-3.png" alt="driver-service">
+                                <span>Booked: No</span></li>
+                                <%} else {%>
+                                    <li><img src="/assets/img/driver-service-3.png" alt="driver-service">
+                                        <span>Booked: Yes</span></li> 
+                                        <%}%>
+                        </ul>
+                      </div>
+                      <div class="search-result-item__price">
+                        <div class="price-box">
+                          <div class="price-box__time"><%= ride.departure_time %></div>
+                          <div class="price-box__price">
+                            <div class="current-price">Departure Date: <%= new Date(ride.departure_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></div>
+                            <div class="col-user">For 1 Passenger</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  <% }) %>
+                <% } else { %>
+                  <div class="no-rides">No rides available. Please try a different search.</div>
+                <% } %>
+              </div>
+            </div>
+            
+          
+              <footer class=" page-footer--search fixed-bottom">
+                <div class="page-footer__inner fixed-bottom">
+                  <div class="page-footer__social fixed-bottom">
+                    <ul class="social">
+                      <li><a href="#!"><i class="fab fa-twitter"></i></a></li>
+                      <li><a href="#!"><i
+                            class="fab fa-facebook-f"></i></a></li>
+                      <li><a href="#!"><i class="fab fa-instagram"></i></a></li>
+                      <li><a href="#!"><i class="fab fa-youtube"></i></a></li>
+                      <li><a href="#!"><i class="fas fa-rss"></i></a></li>
+                    </ul>
+                  </div>
+                  <div class="page-footer__copy"> <span>(c) 2021 All rights
+                      reserved.</span></div>
+                </div>
+              </footer>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="offcanvas" data-uk-offcanvas="overlay: true">
+        <div
+          class="uk-offcanvas-bar uk-flex uk-flex-column uk-flex-between"><button
+            class="uk-offcanvas-close" type="button" data-uk-close></button>
+          <div class="uk-margin">
+            <div class="uk-margin-bottom">
+              <div class="logo"><a class="logo__link" href="/"><img
+                    class="logo__img" src="/assets/img/logo-white.png"
+                    alt="GetRider"></a></div>
+            </div>
+            <div class="uk-margin">
+              <ul class="uk-nav uk-nav-default uk-nav-parent-icon"
+                data-uk-nav>
+                <li class="uk-parent"><a href="/find-ride"> <img
+                      src="/assets/img/search.svg" data-uk-svg
+                      alt="search">Find a Ride</a>
+                  <!-- <ul class="uk-nav-sub">
+                    <li><a href="02-search-1.html">Find a Ride</a></li>
+                    <li><a href="02-search-2.html">Find a Ride Map</a></li>
+                    <li><a href="02-search-3.html">Find a Ride Result</a></li>
+                  </ul> -->
+                </li>
+                <li> <a href="/offer-ride"> <img
+                      src="/assets/img/car.svg" data-uk-svg alt="car">Offer a
+                    Ride</a></li>
+                <!-- <li><a href="#"> <img src="/assets/img/news-paper.svg"
+                      data-uk-svg alt="news-paper">News</a></li> -->
+                <li class="uk-parent"> <a href="/contact"> <img
+                      src="/assets/img/help2.svg" data-uk-svg alt="help2">Help
+                  </a>
+                  <!-- <ul class="uk-nav-sub">
+                    <li><a href="03_blog-1.html">Blog list</a></li>
+                    <li><a href="04_blog-2.html">Blog grid</a></li>
+                    <li><a href="05_blog-post.html">Blog post</a></li>
+                  </ul> -->
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="uk-margin"><a
+              class="uk-button uk-button-danger uk-width-1-1"
+              href="tel:3457008800"> <img src="/assets/img/call.svg" alt="call"
+                data-uk-svg><span>+345 700 8800</span></a></div>
+        </div>
+      </div>
+    </main>
+  </div>
+  
+  <script src="/assets/js/jquery.min.js"></script>
+  <script src="/assets/js/uikit.min.js"></script>
+  <script src="/assets/js/uikit-icons.min.js"></script>
+  <script src="/assets/js/datepicker.min.js"></script>
+  <script src="/assets/js/i18n/datepicker.en.js"></script>
+  <script src="/assets/js/main.js"></script>
+  <script>
+    // Handle meeting location-specific inputs visibility
+    document.getElementById("meet").addEventListener("change", function () {
+      var locationInputs = document.querySelectorAll(".location-input");
+      locationInputs.forEach(function (input) {
+        input.style.display = "none";
+      });
+    
+      var selectedValue = this.options[this.selectedIndex].text; // Get text value for ID matching
+      console.log("Selected Pickup Location:", selectedValue);
+      var selectedLocation = document.getElementById(selectedValue);
+      if (selectedLocation) {
+        selectedLocation.style.display = "block";
+      } else {
+        console.warn("No element found with ID:", selectedValue);
+      }
+    });
+    
+    document.getElementById("meet1").addEventListener("change", function () {
+      var locationInputs = document.querySelectorAll(".location-input1");
+      locationInputs.forEach(function (input) {
+        input.style.display = "none";
+      });
+    
+      var selectedValue = this.options[this.selectedIndex].text; // Get text value for ID matching
+      console.log("Selected Drop-Off Location:", selectedValue);
+      var selectedLocation = document.getElementById(selectedValue + "1");
+      if (selectedLocation) {
+        selectedLocation.style.display = "block";
+      } else {
+        console.warn("No element found with ID:", selectedValue + "1");
+      }
+    });
+    
+  
+    // Set default date and time for the departure date and time inputs
+
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get today's date
+        var today = new Date().toISOString().split('T')[0];
+        // Set the min attribute of the date input
+        document.getElementById('departure-date').setAttribute('min', today);
+    
+        // Get the current time
+        var now = new Date();
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var currentTime = hours + ':' + minutes;
+    
+        // Set the initial value of the date input
+        document.getElementById('departure-date').value = today;
+    
+        // Set the initial value of the time input
+        document.getElementById('departure-time').value = currentTime;
+      });
+    
+      document.addEventListener('DOMContentLoaded', function() {
+        // Get today's date
+        var today = new Date().toISOString().split('T')[0];
+        // Set the min attribute of the date input
+        document.getElementById('departure-date').setAttribute('min', today);
+    
+        // Get the current time
+        var now = new Date();
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var currentTime = hours + ':' + minutes;
+    
+        // Set the value of the time input
+        document.getElementById('departure-time').value = currentTime;
+      });
+    </script>
+  
+  
+
+  
+  
+</body>
+
+</html>

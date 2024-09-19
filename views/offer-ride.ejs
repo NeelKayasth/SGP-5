@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zxx">
+
+  <head>
+    <meta charset="utf-8">
+    <title>Typography</title>
+    <meta content="Chernyh Mihail" name="author">
+    <meta content="GetRider" name="description">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="true">
+    <meta name="format-detection" content="telephone=no">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <link rel="stylesheet" href="/assets/css/uikit.min.css">
+    <link rel="stylesheet" href="/assets/css/all.min.css">
+    <link rel="stylesheet" href="/assets/css/datepicker.min.css">
+    <link rel="stylesheet" href="/assets/css/main.css">
+    <style>
+      
+        .uk-alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            padding: 10px;
+            margin-bottom: 15px;
+        }
+       
+      .uk-text-center {
+        text-align: center;
+      }
+      .uk-margin-large-top {
+        margin-top: 2rem;
+      }
+      .uk-button-primary {
+        background-color: #1e87f0; /* Adjust the button color as needed */
+        border: none;
+      }
+      .uk-button-primary:hover {
+        background-color: #0056b3; /* Adjust hover color as needed */
+      }
+    </style>
+  </head>
+
+  <body class="page-typography">
+
+    <!-- Loader-->
+    <div id="page-preloader"><span
+        class="spinner border-t_second_b border-t_prim_a"></span></div>
+    <!-- Loader end-->
+
+    <div class="page-wrapper">
+      <header class="page-header">
+        <div class="page-header__scroll" data-uk-sticky>
+          <div class="uk-container">
+            <div class="page-header__inner">
+              <div class="page-header__logo">
+                <div class="logo"><a class="logo__link" href="/"><img
+                      class="logo__img" src="/assets/img/logo.png"
+                      alt="GetRider"></a></div>
+              </div>
+              <div class="page-header__menu">
+                <nav class="page-nav" data-uk-navbar>
+                  <ul class="uk-navbar-nav">
+                    <li><a href="/find-ride"> <img
+                          src="/assets/img/search.svg" data-uk-svg
+                          alt="search">Find a Ride</a>
+                      <!-- <div class="uk-navbar-dropdown">
+                        <ul class="uk-nav uk-navbar-dropdown-nav">
+                          <li><a href="02-search-1.html">Find a Ride</a></li>
+                          <li><a href="02-search-2.html">Find a Ride
+                              Map</a></li>
+                          <li><a href="02-search-3.html">Find a Ride
+                              Result</a></li>
+                        </ul>
+                      </div> -->
+                    </li>
+                    <li><a href="/offer-ride"> <img
+                          src="/assets/img/car.svg" data-uk-svg alt="car">Offer a
+                        Ride</a></li>
+                    
+                    <li> <a href="/contact"> <img
+                          src="/assets/img/help2.svg" data-uk-svg
+                          alt="help2">Help</a></li>
+                  </ul>
+                </nav>
+              </div>
+              <div class="page-header__phone"><a
+                  class="uk-button uk-button-danger" href="tel:3457008800"> <img
+                    src="/assets/img/call.svg" alt="call" data-uk-svg><span>+345
+                    700 8800</span></a></div>
+              <div class="page-header__btn"> <a
+                  class="uk-button uk-button-danger" href="#offcanvas"
+                  data-uk-toggle data-uk-icon="menu"></a></div>
+            </div>
+          </div>
+        </div>
+      </header>
+      <!-- <main class="page-main">
+        <div class="section-banner">
+          <div class="section-banner__bg">
+            <div class="uk-cover-container"><img
+                src="/assets/img/img-banner-blog.jpg" alt="img-banner"
+                data-uk-cover><canvas></canvas></div>
+          </div>
+          <div class="section-banner__content">
+            <div class="uk-overlay uk-position-center-left uk-width-1-1">
+              <div class="uk-container uk-width-1-1">
+                <div class="section-banner__title">
+                  <h1>Offer A Ride</h1>
+                </div>
+                <div class="section-banner__text decor-bottom">Share the
+                  Journey, Share the Joy.</div>
+              </div>
+            </div>
+          </div>
+        </div> -->
+        <div class="page-content">
+          <div class="uk-section-large uk-container" style="padding-top: 50px;">
+            <!-- <p>Dolor sit amet, consectetur adipiscing elit. Ut sed bibendum leo. Mauris mau massa, eleifend et <a class="uk-link" href="#!">purus vel feugiat rutrum</a> . Cras vitae est vel ipsum fau bus fermentum a ultricies urna cum sociis.</p>
+          <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Ut sed bibendum leo. Mauris ma massa eleifend et purus vel feugiat rutrum nulla cras vitae est vel ipsum faucibus ferme aultricies urna cum sociis natoque penatibus.</p>
+          <p>Famur sit amet consectetur adipiscing elit ut sed bibenum leo. Mauris mauris as sa eleifend et purus vel feugiat rutrum nulla.</p>
+          <p>Lorem ipsum dolor sit amet consectetur adipiscing elit. Ut sed bibendum leo mauris massa, eleifend et purus vel, feugiat rutrum nulla cras vitae est vel ipsum faucibus ferm aultricies urna dum sociis natoque penatibus et magnis.</p> -->
+            <!-- <div class="uk-child-width-expand@s" data-uk-grid>
+            <div>
+              <h4>Disc</h4>
+              <ul class="uk-list uk-list-disc">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Circle</h4>
+              <ul class="uk-list uk-list-circle">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Square</h4>
+              <ul class="uk-list uk-list-square">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Decimal</h4>
+              <ul class="uk-list uk-list-decimal">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+            </div>
+            <div>
+              <h4>Hyphen</h4>
+              <ul class="uk-list uk-list-hyphen">
+                <li>List item 1</li>
+                <li>List item 2</li>
+                <li>List item 3</li>
+              </ul>
+            </div>
+          </div> -->
+            <!-- <p>Dolor sit amet, consectetur adipiscing elit. Ut sed bibendum leo. Mauris mau massa, eleifend et purus vel feugiat rutrum nulla. Cras vitae est vel ipsum fau bus fermentum a ultricies urna cum sociis.</p> -->
+            <!-- <div class="uk-grid-small uk-child-width-auto@s" data-uk-grid>
+            <div><button class="uk-button uk-button-primary">Primary</button></div>
+            <div><button class="uk-button uk-button-secondary">Secondary</button></div>
+            <div><button class="uk-button uk-button-danger">Danger</button></div>
+            <div><button class="uk-button uk-button-text">Text</button></div>
+            <div><button class="uk-button uk-button-link">Link</button></div>
+          </div> -->
+            <!-- <p>Famur sit amet consectetur adipiscing elit ut sed bibenum leo. Mauris mauris as sa eleifend et purus vel feugiat rutrum nulla.</p> -->
+            <div class="uk-text-center uk-margin-large-bottom">
+              <h2 class="uk-heading-line"><span>Ready to Share Your Ride?</span></h2>
+              <p>Fill out the form below to offer a ride and help others on their journey.</p>
+            </div>
+            <form  id="offer-ride-form" action="/offer-ride" method="post" data-redirect-url="/myrides">
+              <fieldset class="uk-fieldset">
+                <!-- Driver Name -->
+                <legend class="uk-legend">Driver Name</legend>
+                <div class="uk-margin">
+                  <input class="uk-input" type="text" id="username" name="driver_name" value="<%= username %>" disabled>
+                  <input type="hidden" name="driver_name" value="<%= username %>">
+                </div>
+            
+                <!-- Contact Number -->
+                  <legend class="uk-legend">Contact Number</legend>
+                  <div class="uk-margin">
+                    <input class="uk-input" type="text" name="contact_number" placeholder="Enter your contact number" required>
+                  </div>
+
+            
+                <!-- Vehicle Type -->
+                <legend class="uk-legend">Vehicle Type</legend>
+                <div class="uk-margin">
+                  <select class="uk-select" name="vehicle" id="vehicle" required>
+                    <option value="2">2 Wheeler</option>
+                    <option value="4">4 Wheeler</option>
+                  </select>
+                </div>
+            
+                <!-- Seats Available -->
+                <legend class="uk-legend">Seats Available</legend>
+                <div class="uk-margin">
+                  <select class="uk-select" name="seat" id="seat" required>
+                    <option value="1">1</option>
+                    <!-- More options will be dynamically added based on vehicle type -->
+                  </select>
+                </div>
+            
+                <!-- Meeting Location -->
+                <legend class="uk-legend">Meeting Location</legend>
+                <div class="uk-margin">
+                  <select class="uk-select" name="meet" id="meet" required>
+                    <option value="Campus Back Gate">Campus Back Gate (Beside Parking)</option>
+                    <option value="Campus Front Gate">Campus Front Gate</option>
+                    <option value="Anand">Anand</option>
+                    <option value="Nadiad">Nadiad</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Vadodara">Vadodara</option>
+                  </select>
+                </div>
+            
+                <!-- Location-specific input fields for Meeting Location -->
+                <div id="location">
+                  <div class="uk-margin location-input" id="Anand" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location" placeholder="Where in Anand?">
+                  </div>
+                  <div class="uk-margin location-input" id="Nadiad" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location" placeholder="Where in Nadiad?">
+                  </div>
+                  <div class="uk-margin location-input" id="Ahmedabad" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location" placeholder="Where in Ahmedabad?">
+                  </div>
+                  <div class="uk-margin location-input" id="Vadodara" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location" placeholder="Where in Vadodara?">
+                  </div>
+                </div>
+            
+                <!-- Drop-Off Location -->
+                <legend class="uk-legend">Drop-Off Location</legend>
+                <div class="uk-margin">
+                  <select class="uk-select" name="meet1" id="meet1" required>
+                    <option value="Campus Back Gate">Campus Back Gate (Beside Parking)</option>
+                    <option value="Campus Front Gate">Campus Front Gate</option>
+                    <option value="Anand">Anand</option>
+                    <option value="Nadiad">Nadiad</option>
+                    <option value="Ahmedabad">Ahmedabad</option>
+                    <option value="Vadodara">Vadodara</option>
+                  </select>
+                </div>
+            
+                <!-- Location-specific input fields for Drop-Off Location -->
+                <div id="location1">
+                  <div class="uk-margin location-input1" id="Anand1" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location1" placeholder="Where in Anand?">
+                  </div>
+                  <div class="uk-margin location-input1" id="Nadiad1" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location1" placeholder="Where in Nadiad?">
+                  </div>
+                  <div class="uk-margin location-input1" id="Ahmedabad1" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location1" placeholder="Where in Ahmedabad?">
+                  </div>
+                  <div class="uk-margin location-input1" id="Vadodara1" style="display: none;">
+                    <legend class="uk-legend">Location</legend>
+                    <input class="uk-input" type="text" name="meet_location1" placeholder="Where in Vadodara?">
+                  </div>
+                </div>
+            
+                <!-- Departure Date and Time -->
+                <legend class="uk-legend">Departure Date and Time</legend>
+                <div class="uk-margin">
+                  <input class="uk-input" type="date" name="departure_date" id="departure-date" placeholder="Departure Date" required>
+                </div>
+                <div class="uk-margin">
+                  <input class="uk-input" type="time" name="departure_time" id="departure-time" placeholder="Departure Time" required>
+                </div>
+              </fieldset>
+            
+              <div class="search-form-btn">
+                <button class="uk-button uk-button-danger" type="submit">
+                  <span class="uk-margin-small-right">
+                  </span
+                  ><span>Submit your ride Offer</span>
+                </button>
+              </div>
+            </form> 
+    </div>
+    <footer class="page-footer">
+      <div class="uk-container">
+        <div class="page-footer__inner">
+          <div class="page-footer__logo">
+            <div class="logo"><a class="logo__link" href="/"><img class="logo__img" src="/assets/img/logo-white.png" alt="GetRider"></a></div>
+          </div>
+          <div class="page-footer__text">
+            <p>Eorem ipsum dolor sit amet consectetur adipisicing elit edolore magna<br> aliqua ut enim ad minim veniam quis aliquip consequat</p>
+          </div>
+          <div class="page-footer__social">
+            <ul class="social">
+              <li><a href="#!"><i class="fab fa-twitter"></i></a></li>
+              <li><a href="#!"><i class="fab fa-facebook-f"></i></a></li>
+              <li><a href="#!"><i class="fab fa-instagram"></i></a></li>
+              <li><a href="#!"><i class="fab fa-youtube"></i></a></li>
+              <li><a href="#!"><i class="fas fa-rss"></i></a></li>
+            </ul>
+          </div>
+          <div class="page-footer__copy"> <span>(c) 2021 All rights reserved.</span></div>
+        </div>
+      </div><!-- Additional blocks-->
+      <div id="offcanvas" data-uk-offcanvas="overlay: true">
+        <div class="uk-offcanvas-bar uk-flex uk-flex-column uk-flex-between"><button class="uk-offcanvas-close" type="button" data-uk-close=""></button>
+          <div class="uk-margin">
+            <div class="uk-margin-bottom">
+              <div class="logo"><a class="logo__link" href="/"><img class="logo__img" src="/assets/img/logo-white.png" alt="GetRider"></a></div>
+            </div>
+            <div class="uk-margin">
+              <ul class="uk-nav uk-nav-default uk-nav-parent-icon">
+                <li ><a href="/find-ride"> <img src="/assets/img/search.svg" data-uk-svg alt="search">Find a Ride</a>
+                  <!-- <ul class="uk-nav-sub">
+                    <li><a href="02-search-1.html">Find a Ride</a></li>
+                    <li><a href="02-search-2.html">Find a Ride Map</a></li>
+                    <li><a href="02-search-3.html">Find a Ride Result</a></li>
+                  </ul> -->
+                </li>
+                <li> <a href="/offer-ride"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Offer a Ride</a></li>
+                <!-- <li><a href="#"> <img src="/assets/img/news-paper.svg" data-uk-svg alt="news-paper">News</a></li> -->
+                <li > <a href="/contact"> <img src="/assets/img/help2.svg" data-uk-svg alt="help2">Help </a>
+                  <!-- <ul class="uk-nav-sub">
+                    <li><a href="03_blog-1.html">Blog list</a></li>
+                    <li><a href="04_blog-2.html">Blog grid</a></li>
+                    <li><a href="05_blog-post.html">Blog post</a></li>
+                  </ul> -->
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div class="uk-margin"><a class="uk-button uk-button-danger uk-width-1-1" href="tel:3457008800"> <img src="/assets/img/call.svg" alt="call" data-uk-svg><span>+345 700 8800</span></a></div>
+        </div>
+      </div>
+      <div class="uk-flex-top" id="callback" data-uk-modal="">
+        <div class="uk-modal-dialog uk-modal-body uk-margin-auto-vertical"><button class="uk-modal-close-default" type="button" data-uk-close=""></button>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        </div>
+      </div><!-- End Additional blocks-->
+    </footer>
+    <script src="/assets/js/jquery.min.js"></script>
+    <script src="/assets/js/uikit.min.js"></script>
+    <script src="/assets/js/uikit-icons.min.js"></script>
+    <script src="/assets/js/datepicker.min.js"></script>
+    <script src="/assets/js/i18n/datepicker.en.js"></script>
+    <script src="/assets/js/main.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      // Handle seat selection based on vehicle type
+      document.getElementById('vehicle').addEventListener('change', function () {
+          var seatSelect = document.getElementById('seat');
+          seatSelect.innerHTML = ''; // Clear existing options
+  
+          if (this.value === '2') {
+              seatSelect.innerHTML = '<option value="1">1</option>';
+          } else if (this.value === '4') {
+              seatSelect.innerHTML = '<option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>';
+          }
+      });
+  
+      // Handle meeting location-specific inputs visibility
+      document.getElementById('meet').addEventListener('change', function () {
+          // Hide all location input fields initially
+          var locationInputs = document.querySelectorAll('.location-input');
+          locationInputs.forEach(function (input) {
+              input.style.display = 'none';
+          });
+  
+          // Show the specific location input field based on the selected value
+          var selectedValue = this.options[this.selectedIndex].text; // Get text value for ID matching
+          var selectedLocation = document.getElementById(selectedValue);
+          if (selectedLocation) {
+              selectedLocation.style.display = 'block';
+          }
+      });
+  
+      // Handle drop-off location-specific inputs visibility
+      document.getElementById('meet1').addEventListener('change', function () {
+          // Hide all location input fields initially
+          var locationInputs = document.querySelectorAll('.location-input1');
+          locationInputs.forEach(function (input) {
+              input.style.display = 'none';
+          });
+  
+          // Show the specific location input field based on the selected value
+          var selectedValue = this.options[this.selectedIndex].text; // Get text value for ID matching
+          var selectedLocation = document.getElementById(selectedValue + "1");
+          if (selectedLocation) {
+              selectedLocation.style.display = 'block';
+          }
+      });
+  
+      // Set default date and time for the departure date and time inputs
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('departure-date').setAttribute('min', today);
+  
+      var now = new Date();
+      var hours = now.getHours().toString().padStart(2, '0');
+      var minutes = now.getMinutes().toString().padStart(2, '0');
+      var currentTime = hours + ':' + minutes;
+  
+      // Set the initial values
+      document.getElementById('departure-date').value = today;
+      document.getElementById('departure-time').value = currentTime;
+  
+      // Validate form submission
+      const form = document.getElementById('offer-ride-form');
+  
+      form.addEventListener('submit', (event) => {
+          const meetLocation = form.querySelector('select[name="meet"]').value;
+          const dropoffLocation = form.querySelector('select[name="meet1"]').value;
+  
+          if (meetLocation === dropoffLocation) {
+              event.preventDefault(); // Prevent form submission
+              
+              // Remove any existing flash message
+              const existingMessage = form.previousElementSibling;
+              if (existingMessage && existingMessage.classList.contains('uk-alert-danger')) {
+                  existingMessage.remove();
+              }
+  
+              // Display flash message
+              const flashMessage = document.createElement('div');
+              flashMessage.className = 'uk-alert-danger';
+              flashMessage.innerHTML = '<p><strong>Error:</strong> Pickup and drop-off locations cannot be the same11.</p>';
+              form.insertAdjacentElement('beforebegin', flashMessage);
+          }
+      });
+  });
+</script>
+    
+  </body>
+
+</html>

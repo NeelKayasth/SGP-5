@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Available Rides</title>
+    <link rel="stylesheet" href="/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        a {
+            display: inline-block;
+            margin-bottom: 20px;
+            font-size: 16px;
+            color: #fe424d;
+            text-decoration: none;
+            padding: 10px 20px;
+            border: 1px solid #fe424d;
+            border-radius: 4px;
+        }
+        a:hover {
+            background-color: #fe424d;
+            color: #fff;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        th {
+            background-color: #fe424d;
+            color: #ffffff;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #fe424d;
+            color: #ffffff;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Available Rides</h1>
+        <a href="/find-ride" class="btn-secondary">Search Again</a>
+        
+        <% if (rides.length > 0) { %>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Driver Name</th>
+                        <th>Vehicle Type</th>
+                        <th>Seats Available</th>
+                        <th>Contact Number</th>
+                        <th>Pickup Location</th>
+                        <th>Pickup Location Details</th>
+                        <th>Dropoff Location</th>
+                        <th>Dropoff Location Details</th>
+                        <th>Departure Date</th>
+                        <th>Departure Time</th>
+                        <th>Action</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    <% rides.forEach(ride => { %>
+                        <tr>
+                            <td><%= ride.driver_name %></td>
+                            <td><%= ride.vehicle_type %></td>
+                            <td><%= ride.seats_available %></td>
+                            <td><%= ride.contact_number %></td>
+                            <td><%= ride.meeting_location %></td>
+                            <td><%= ride.meeting_location_specific || 'N/A' %></td>
+                            <td><%= ride.dropoff_location %></td>
+                            <td><%= ride.dropoff_location_specific || 'N/A' %></td>
+                            <td><%= new Date(ride.departure_date).toLocaleDateString() %></td>
+                            <td><%= ride.departure_time %></td>
+                            <td>
+                                <form action="/confirm-ride/<%= ride.id %>" method="POST">
+                                    <button type="submit" class="btn-primary">Confirm Your Ride</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        <% } else { %>
+            <p>No rides found matching your criteria.</p>
+        <% } %>
+
+        <a href="/" class="btn-secondary">Go to Home Page</a>
+    </div>
+    <footer>
+        &copy; 2024 Your Company Name
+    </footer>
+</body>
+</html>
