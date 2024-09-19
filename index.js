@@ -228,6 +228,8 @@ app.post('/find-ride', isAuthenticated,(req, res) => {
 // Booking a ride - Protected Route
 app.post('/book', isAuthenticated, (req, res) => {
     const rideId = req.body.rideId;
+    const email = req.session.email;
+    console.log("Hi");
 
     const sqlQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
 
@@ -237,8 +239,28 @@ app.post('/book', isAuthenticated, (req, res) => {
             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
         }
 
+        const mailOptions = {
+            from: 'hirenmehtadhruv@gmail.com', // sender address
+            to: email, // receiver's email (user who booked the ride)
+            subject: 'Ride Booking Confirmation',
+            text: 'Thank you for booking your ride with us. Your ride is confirmed!'
+          };
+        
+          // Send the email
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+              res.status(500).send('Error sending confirmation email');
+            } else {
+              console.log('Email sent: ' + info.response);
+              res.status(200).send('Ride booked successfully, confirmation email sent');
+            }
+          });
+
         res.json({ success: true });
     });
+
+
 });
 
 // Contact pages
