@@ -583,7 +583,7 @@ app.post('/register', async (req, res) => {
         const mailOptions = {
             from: 'rideshare577@gmail.com',
             to: email,
-            subject: 'For Verification at Medwell.',
+            subject: 'For Verification at RideShare.',
             html: '<p>Hi  <strong>' + username + '</strong></p><br/>\n' +
                 '<p>Please click on the following link to verify your account.</p>\n' +
                 '<a href="http://localhost:3000/verify?id=' + user_id + '">Verify Account</a>',
