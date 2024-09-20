@@ -415,29 +415,8 @@
       document.getElementById('departure-date').value = today;
       document.getElementById('departure-time').value = currentTime;
   
-      // Validate form submission
-      const form = document.getElementById('offer-ride-form');
-  
-      form.addEventListener('submit', (event) => {
-          const meetLocation = form.querySelector('select[name="meet"]').value;
-          const dropoffLocation = form.querySelector('select[name="meet1"]').value;
-  
-          if (meetLocation === dropoffLocation) {
-              event.preventDefault(); // Prevent form submission
-              
-              // Remove any existing flash message
-              const existingMessage = form.previousElementSibling;
-              if (existingMessage && existingMessage.classList.contains('uk-alert-danger')) {
-                  existingMessage.remove();
-              }
-  
-              // Display flash message
-              const flashMessage = document.createElement('div');
-              flashMessage.className = 'uk-alert-danger';
-              flashMessage.innerHTML = '<p><strong>Error:</strong> Pickup and drop-off locations cannot be the same11.</p>';
-              form.insertAdjacentElement('beforebegin', flashMessage);
-          }
-      });
+      
+      
   });
 </script>
     

@@ -18,5 +18,5 @@
     "mysql2": "^3.11.0",
     "path": "^0.12.7"
   },
-  "description": ""
+  "description": "Ride sharing web application for charusat university students"
 }
