@@ -554,30 +554,58 @@ app.get('/myrides', (req, res) => {
 });
 
 // Registration
+// Registration
 app.post('/register', async (req, res) => {
-    const { username,phone_number, email, password ,gender} = req.body;
+    const { username, phone_number, email, password, gender } = req.body;
 
     try {
-        const [results] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+        // Check if the email is already registered
+        const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
 
-        if (results.length > 0) {
+        if (existingUser.length > 0) {
             req.flash('error', 'Email is already registered.');
             return res.redirect('/register');
         }
 
+        // Hash the password before saving it
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        await db.promise().query('INSERT INTO users (username, email, password,phone_number,gender) VALUES (?, ?, ?,?,?)', [username, email, hashedPassword,phone_number,gender]);
+        // Insert the new user into the database
+        const [insertResult] = await db.promise().query(
+            'INSERT INTO users (username, email, password, phone_number, gender) VALUES (?, ?, ?, ?, ?)',
+            [username, email, hashedPassword, phone_number, gender]
+        );
 
-        req.flash('success', 'Registration successful! Please log in.');
+        // Get the user_id of the newly registered user
+        const user_id = insertResult.insertId; // This gets the user ID
+
+        // Prepare the email with the verification link
+        const mailOptions = {
+            from: 'rideshare577@gmail.com',
+            to: email,
+            subject: 'For Verification at Medwell.',
+            html: '<p>Hi  <strong>' + username + '</strong></p><br/>\n' +
+                '<p>Please click on the following link to verify your account.</p>\n' +
+                '<a href="http://localhost:3000/verify?id=' + user_id + '">Verify Account</a>',
+        };
+
+        // Send the email
+        transporter.sendMail(mailOptions, function (error, info) {
+            if (error) {
+                console.log('Error sending verification email:', error);
+            } else {
+                console.log('Email sent: ', info.response);
+            }
+        });
+
+        req.flash('success', 'Registration successful! Please check your email to verify your account.');
         res.redirect('/login');
     } catch (error) {
-        console.error(error);
+        console.error('Registration error:', error);
         req.flash('error', 'An error occurred during registration. Please try again.');
         res.redirect('/register');
     }
 });
-
 
 
 
@@ -635,6 +663,42 @@ app.get("/logout" ,(req,res)=>{
             });
 
 });
+
+// Verification route
+app.get('/verify', async (req, res) => {
+    const userId = req.query.id;
+
+    if (!userId) {
+        return res.status(400).send('Verification link is invalid or missing.');
+    }
+
+    try {
+        console.log(userId);
+        // Check if the user exists
+        const [results] = await db.promise().query('SELECT * FROM users WHERE id = ?', [userId]);
+
+        if (results.length === 0) {
+            return res.status(404).send('User not found.');
+        }
+
+        const user = results[0];
+
+        // Check if the user is already verified
+        if (user.is_verified) {
+            return res.status(400).send('Account is already verified.');
+        }
+
+        // Update the user to mark them as verified
+        await db.promise().query('UPDATE users SET is_verfied = 1 WHERE id = ?', [userId]);
+
+        req.flash('success', 'Account successfully verified. Please log in.');
+        res.redirect('/login');
+    } catch (error) {
+        console.error('Error verifying account:', error);
+        res.status(500).send('An error occurred during verification. Please try again.');
+    }
+});
+
 
 // Start the server
 app.listen(3000, () => {
