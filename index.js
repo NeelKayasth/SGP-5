@@ -5,6 +5,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const flash = require('connect-flash');
 const bcrypt = require('bcrypt');
+const nodemailer = require('nodemailer');
+
 
 const app = express();
 
@@ -31,7 +33,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Neel12345',
+    password: 'dhruv2004',
     database: 'ride_sharing'
 });
 
@@ -488,23 +490,23 @@ app.post('/book', isAuthenticated, (req, res) => {
             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
         }
 
-        // const mailOptions = {
-        //     from: 'hirenmehtadhruv@gmail.com', // sender address
-        //     to: email, // receiver's email (user who booked the ride)
-        //     subject: 'Ride Booking Confirmation',
-        //     text: 'Thank you for booking your ride with us. Your ride is confirmed!'
-        //   };
+        const mailOptions = {
+            from: 'hirenmehtadhruv@gmail.com', // sender address
+            to: email, // receiver's email (user who booked the ride)
+            subject: 'Ride Booking Confirmation',
+            text: 'Thank you for booking your ride with us. Your ride is confirmed!'
+          };
         
-        //   // Send the email
-        //   transporter.sendMail(mailOptions, (error, info) => {
-        //     if (error) {
-        //       console.log(error);
-        //       res.status(500).send('Error sending confirmation email');
-        //     } else {
-        //       console.log('Email sent: ' + info.response);
-        //       res.status(200).send('Ride booked successfully, confirmation email sent');
-        //     }
-        //   });
+          // Send the email
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.log(error);
+              res.status(500).send('Error sending confirmation email');
+            } else {
+              console.log('Email sent: ' + info.response);
+              res.status(200).send('Ride booked successfully, confirmation email sent');
+            }
+          });
 
         res.json({ success: true });
     });
@@ -638,3 +640,13 @@ app.get("/logout" ,(req,res)=>{
 app.listen(3000, () => {
     console.log('Server is running on port 3000');
 });
+
+
+const transporter = nodemailer.createTransport({
+    service: 'Gmail', // or another email service
+    auth: {
+      user: 'rideshare577@gmail.com', // replace with your email
+      pass: 'rqvbraleuiykqwcc' // replace with your email password
+    }
+  });
+  
