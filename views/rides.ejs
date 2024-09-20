@@ -271,8 +271,11 @@
                           <div class="price-box__price">
                             <div class="current-price">Departure Date: <%= new Date(ride.departure_date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %></div>
                             <div class="col-user">For 1 Passenger</div>
+                            <button class="uk-button uk-button-danger cancel-ride-button" data-ride-id="<%= ride.id %>">Cancel Ride</button>
                           </div>
+                         
                         </div>
+                       
                       </div>
                     </div>
                   <% }) %>
