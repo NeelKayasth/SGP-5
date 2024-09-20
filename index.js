@@ -33,7 +33,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'dhruv2004',
+    password: 'Neel12345',
     database: 'ride_sharing'
 });
 
