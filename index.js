@@ -31,7 +31,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'dhruv2004',
+    password: 'Neel12345',
     database: 'ride_sharing'
 });
 
@@ -166,7 +166,7 @@ const uid = req.session.userid;
             return res.status(500).send('Failed to offer a ride.');
         }
 
-        req.flash('success', 'Ride offered successfully!');
+        
         res.redirect('/myrides');
     });
 });
@@ -239,23 +239,23 @@ app.post('/book', isAuthenticated, (req, res) => {
             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
         }
 
-        const mailOptions = {
-            from: 'hirenmehtadhruv@gmail.com', // sender address
-            to: email, // receiver's email (user who booked the ride)
-            subject: 'Ride Booking Confirmation',
-            text: 'Thank you for booking your ride with us. Your ride is confirmed!'
-          };
+        // const mailOptions = {
+        //     from: 'hirenmehtadhruv@gmail.com', // sender address
+        //     to: email, // receiver's email (user who booked the ride)
+        //     subject: 'Ride Booking Confirmation',
+        //     text: 'Thank you for booking your ride with us. Your ride is confirmed!'
+        //   };
         
-          // Send the email
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.log(error);
-              res.status(500).send('Error sending confirmation email');
-            } else {
-              console.log('Email sent: ' + info.response);
-              res.status(200).send('Ride booked successfully, confirmation email sent');
-            }
-          });
+        //   // Send the email
+        //   transporter.sendMail(mailOptions, (error, info) => {
+        //     if (error) {
+        //       console.log(error);
+        //       res.status(500).send('Error sending confirmation email');
+        //     } else {
+        //       console.log('Email sent: ' + info.response);
+        //       res.status(200).send('Ride booked successfully, confirmation email sent');
+        //     }
+        //   });
 
         res.json({ success: true });
     });
@@ -306,6 +306,10 @@ app.post('/register', async (req, res) => {
         res.redirect('/register');
     }
 });
+
+
+
+
 
 // Login
 app.post("/loginadd", (req, res) => {
