@@ -82,6 +82,225 @@ app.get('/login', (req, res) => {
 });
 
 // Offering A Ride - Protected Route
+// app.post('/offer-ride', isAuthenticated, (req, res) => {
+//     const {
+//         driver_name,
+//         vehicle,
+//         seat,
+//         meet,
+//         meet_location,
+//         meet1,
+//         meet_location1,
+//         departure_date,
+//         departure_time,
+//         contact_number
+//     } = req.body;
+
+// const uid = req.session.userid;
+
+//     if (meet === meet1) {
+//         req.flash('error', 'Pickup and drop-off locations cannot be the same.');
+//         return res.redirect('/offer-ride');
+//     }
+
+//     const locationMap = {
+//         "Campus Back Gate": "Campus Back Gate(Beside Parking)",
+//         "Campus Front Gate": "Campus Front Gate",
+//         "Anand": "Anand",
+//         "Nadiad": "Nadiad",
+//         "Ahmedabad": "Ahmedabad",
+//         "Vadodara": "Vadodara"
+//     };
+
+//     const vehicleMap = {
+//         "4": "4 Wheeler",
+//         "2": "2 Wheeler"
+//     };
+
+//     const meet_location_value = Array.isArray(meet_location) ? meet_location.find(loc => loc.trim() !== '') : meet_location;
+//     const meet_location1_value = Array.isArray(meet_location1) ? meet_location1.find(loc => loc.trim() !== '') : meet_location1;
+
+//     const meeting_location_name = locationMap[meet] || null;
+//     const dropoff_location_name = locationMap[meet1] || null;
+//     const vehicle_type_name = vehicleMap[vehicle] || null;
+
+//     if (!driver_name || !vehicle_type_name || !seat || !meet || !meet1 || !departure_date || !departure_time || !meeting_location_name || !contact_number) {
+//         return res.status(400).send('All fields are required.');
+//     }
+
+//     // Check if the user has already offered a ride for the same date (ignore time)
+//     const checkSql = `
+//         SELECT * FROM rides 
+//         WHERE user_id = ? 
+//         AND DATE(departure_date) = ?
+//     `;
+
+//     db.query(checkSql, [uid, departure_date], (err, results) => {
+//         if (err) {
+//             console.error('Database error:', err.message);
+//             return res.status(500).send('An error occurred while checking for existing rides.');
+//         }
+
+//         if (results.length > 0) {
+//             // console.log("User has already offered a ride on this date.");
+//             // req.flash('error', 'You have already offered a ride for this date.');
+            
+//             res.json({ success: false, message: 'You have already offered a ride for this date.' });
+//             return  res.redirect('/myrides');
+//         }
+//     });
+
+//     const sql = `
+//         INSERT INTO rides (
+//             driver_name,
+//             vehicle_type,
+//             seats_available,
+//             meeting_location,
+//             meeting_location_specific,
+//             dropoff_location,
+//             dropoff_location_specific,
+//             departure_date,
+//             departure_time,
+//             contact_number,
+//             booked,
+//             user_id 
+//         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+//     `;
+
+//     const values = [
+//         driver_name,
+//         vehicle_type_name,
+//         seat,
+//         meeting_location_name,
+//         meet_location_value || '',
+//         dropoff_location_name,
+//         meet_location1_value || '',
+//         departure_date,
+//         departure_time,
+//         contact_number,
+//         0,
+//         uid
+//     ];
+
+//     db.query(sql, values, (err, result) => {
+//         if (err) {
+//             console.error('Database error:', err.message);
+//             return res.status(500).send('Failed to offer a ride.');
+//         }
+
+        
+//         res.redirect('/myrides');
+//     });
+// });
+
+// app.post('/offer-ride', isAuthenticated, (req, res) => {
+//     const {
+//         driver_name,
+//         vehicle,
+//         seat,
+//         meet,
+//         meet_location,
+//         meet1,
+//         meet_location1,
+//         departure_date,
+//         departure_time,
+//         contact_number
+//     } = req.body;
+
+//     const uid = req.session.userid;
+
+//     if (meet === meet1) {
+//         req.flash('error', 'Pickup and drop-off locations cannot be the same.');
+//         return res.json({ success: false, message: 'Pickup and drop-off locations cannot be the same.' });
+//     }
+
+//     const locationMap = {
+//         "Campus Back Gate": "Campus Back Gate(Beside Parking)",
+//         "Campus Front Gate": "Campus Front Gate",
+//         "Anand": "Anand",
+//         "Nadiad": "Nadiad",
+//         "Ahmedabad": "Ahmedabad",
+//         "Vadodara": "Vadodara"
+//     };
+
+//     const vehicleMap = {
+//         "4": "4 Wheeler",
+//         "2": "2 Wheeler"
+//     };
+
+//     const meet_location_value = Array.isArray(meet_location) ? meet_location.find(loc => loc.trim() !== '') : meet_location;
+//     const meet_location1_value = Array.isArray(meet_location1) ? meet_location1.find(loc => loc.trim() !== '') : meet_location1;
+
+//     const meeting_location_name = locationMap[meet] || null;
+//     const dropoff_location_name = locationMap[meet1] || null;
+//     const vehicle_type_name = vehicleMap[vehicle] || null;
+
+//     if (!driver_name || !vehicle_type_name || !seat || !meet || !meet1 || !departure_date || !departure_time || !meeting_location_name || !contact_number) {
+//         return res.status(400).json({ success: false, message: 'All fields are required.' });
+//     }
+
+//     // Check if the user has already offered a ride for the same date
+//     const checkSql = `
+//         SELECT * FROM rides 
+//         WHERE user_id = ? 
+//         AND DATE(departure_date) = ?
+//     `;
+//     // and depatur_time < current_time
+
+//     db.query(checkSql, [uid, departure_date], (err, results) => {
+//         if (err) {
+//             console.error('Database error:', err.message);
+//             return res.status(500).json({ success: false, message: 'An error occurred while checking for existing rides.' });
+//         }
+
+//         if (results.length > 0) {
+//             return res.json({ success: false, message: 'You have already offered a ride for this date.' });
+//         }
+
+//         // Proceed to insert the ride
+//         const sql = `
+//             INSERT INTO rides (
+//                 driver_name,
+//                 vehicle_type,
+//                 seats_available,
+//                 meeting_location,
+//                 meeting_location_specific,
+//                 dropoff_location,
+//                 dropoff_location_specific,
+//                 departure_date,
+//                 departure_time,
+//                 contact_number,
+//                 booked,
+//                 user_id 
+//             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+//         `;
+
+//         const values = [
+//             driver_name,
+//             vehicle_type_name,
+//             seat,
+//             meeting_location_name,
+//             meet_location_value || '',
+//             dropoff_location_name,
+//             meet_location1_value || '',
+//             departure_date,
+//             departure_time,
+//             contact_number,
+//             0,
+//             uid
+//         ];
+
+//         db.query(sql, values, (err, result) => {
+//             if (err) {
+//                 console.error('Database error:', err.message);
+//                 return res.status(500).json({ success: false, message: 'Failed to offer a ride.' });
+//             }
+
+//             return res.json({ success: true, message: 'Ride offered successfully!', redirectUrl: '/myrides' });
+//         });
+//     });
+// });
+
 app.post('/offer-ride', isAuthenticated, (req, res) => {
     const {
         driver_name,
@@ -96,11 +315,10 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
         contact_number
     } = req.body;
 
-const uid = req.session.userid;
+    const uid = req.session.userid;
 
     if (meet === meet1) {
-        req.flash('error', 'Pickup and drop-off locations cannot be the same.');
-        return res.redirect('/offer-ride');
+        return res.json({ success: false, message: 'Pickup and drop-off locations cannot be the same.' });
     }
 
     const locationMap = {
@@ -125,51 +343,82 @@ const uid = req.session.userid;
     const vehicle_type_name = vehicleMap[vehicle] || null;
 
     if (!driver_name || !vehicle_type_name || !seat || !meet || !meet1 || !departure_date || !departure_time || !meeting_location_name || !contact_number) {
-        return res.status(400).send('All fields are required.');
+        return res.status(400).json({ success: false, message: 'All fields are required.' });
     }
 
-    const sql = `
-        INSERT INTO rides (
+    // Query to check the last ride offered by the user on the same date
+    const checkSql = `
+        SELECT * FROM rides 
+        WHERE user_id = ? 
+        AND DATE(departure_date) = ?
+        ORDER BY departure_time DESC
+        LIMIT 1
+    `;
+
+    db.query(checkSql, [uid, departure_date], (err, results) => {
+        if (err) {
+            console.error('Database error:', err.message);
+            return res.status(500).json({ success: false, message: 'An error occurred while checking for existing rides.' });
+        }
+
+        if (results.length > 0) {
+            const lastOfferedRide = results[0];
+            const lastOfferedTime = lastOfferedRide.departure_time;  // Get the previously offered ride's departure time
+            
+            // Get the current server time
+            const currentTime = new Date();
+            const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 5);  // Get current time in HH:MM format
+            
+            // Check if the current time is before or equal to the last offered ride time
+            if (currentTimeHoursMinutes <= lastOfferedTime) {
+                return res.json({ success: false, message: `You cannot offer a new ride before ${lastOfferedTime}. Please wait until the time has passed.` });
+            }
+        }
+
+        // If no rides or time has passed, proceed to insert the new ride
+        const sql = `
+            INSERT INTO rides (
+                driver_name,
+                vehicle_type,
+                seats_available,
+                meeting_location,
+                meeting_location_specific,
+                dropoff_location,
+                dropoff_location_specific,
+                departure_date,
+                departure_time,
+                contact_number,
+                booked,
+                user_id 
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        `;
+
+        const values = [
             driver_name,
-            vehicle_type,
-            seats_available,
-            meeting_location,
-            meeting_location_specific,
-            dropoff_location,
-            dropoff_location_specific,
+            vehicle_type_name,
+            seat,
+            meeting_location_name,
+            meet_location_value || '',
+            dropoff_location_name,
+            meet_location1_value || '',
             departure_date,
             departure_time,
             contact_number,
-            booked,
-            user_id 
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
-    `;
+            0,
+            uid
+        ];
 
-    const values = [
-        driver_name,
-        vehicle_type_name,
-        seat,
-        meeting_location_name,
-        meet_location_value || '',
-        dropoff_location_name,
-        meet_location1_value || '',
-        departure_date,
-        departure_time,
-        contact_number,
-        0,
-        uid
-    ];
+        db.query(sql, values, (err, result) => {
+            if (err) {
+                console.error('Database error:', err.message);
+                return res.status(500).json({ success: false, message: 'Failed to offer a ride.' });
+            }
 
-    db.query(sql, values, (err, result) => {
-        if (err) {
-            console.error('Database error:', err.message);
-            return res.status(500).send('Failed to offer a ride.');
-        }
-
-        
-        res.redirect('/myrides');
+            return res.json({ success: true, message: 'Ride offered successfully!', redirectUrl: '/myrides' });
+        });
     });
 });
+
 
 // Find ride page
 app.get('/find-ride',isAuthenticated, (req, res) => {
@@ -262,6 +511,26 @@ app.post('/book', isAuthenticated, (req, res) => {
 
 
 });
+
+// Cancel a booked ride
+app.post('/cancel-ride', async (req, res) => {
+    const { rideId } = req.body;
+
+    try {
+        // Update the ride's booked status to 0 (unbooked) based on the rideId
+        await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
+
+        // Send success response
+        res.json({ message: 'Ride canceled successfully!', status: 'success' });
+    } catch (error) {
+        console.error('Error canceling ride:', error);
+
+        // Send error response
+        res.status(500).json({ message: 'Failed to cancel the ride. Please try again.', status: 'error' });
+    }
+});
+
+
 
 // Contact pages
 app.get('/contact', (req, res) => {
