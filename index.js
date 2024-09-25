@@ -33,7 +33,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Neel12345',
+    password: 'dhruv2004',
     database: 'ride_sharing'
 });
 
@@ -491,10 +491,10 @@ app.post('/book', isAuthenticated, (req, res) => {
         }
 
         const mailOptions = {
-            from: 'hirenmehtadhruv@gmail.com', // sender address
+            from: 'rideshare577@gmail.com', // sender address
             to: email, // receiver's email (user who booked the ride)
             subject: 'Ride Booking Confirmation',
-            text: 'Thank you for booking your ride with us. Your ride is confirmed!'
+            text: 'Thank you for booking your ride with us. Your ride is confirmed! \n '
           };
         
           // Send the email
