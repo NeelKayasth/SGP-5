@@ -33,7 +33,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Neel12345',
+    password: 'dhruv2004',
     database: 'ride_sharing'
 });
 
@@ -258,61 +258,237 @@ app.post('/find-ride', isAuthenticated,(req, res) => {
 });
 
 // Booking a ride - Protected Route
+// app.post('/book', isAuthenticated, (req, res) => {
+//     const rideId = req.body.rideId;
+//     const email = req.session.email;
+//     console.log("Hi");
+
+//     const sqlQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
+
+//     db.query(sqlQuery, [rideId], (err, results) => {
+//         if (err) {
+//             console.error('Error updating ride:', err);
+//             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
+//         }
+
+//         const mailOptions = {
+//             from: 'rideshare577@gmail.com', // sender address
+//             to: email, // receiver's email (user who booked the ride)
+//             subject: 'Ride Booking Confirmation',
+//             text: 'Thank you for booking your ride with us. Your ride is confirmed! \n '
+//           };
+        
+//           // Send the email
+//           transporter.sendMail(mailOptions, (error, info) => {
+//             if (error) {
+//               console.log(error);
+//               res.status(500).send('Error sending confirmation email');
+//             } else {
+//               console.log('Email sent: ' + info.response);
+//               res.status(200).send('Ride booked successfully, confirmation email sent');
+//             }
+//           });
+
+//         res.json({ success: true });
+//     });
+
+
+// });
+
 app.post('/book', isAuthenticated, (req, res) => {
     const rideId = req.body.rideId;
     const email = req.session.email;
-    console.log("Hi");
 
-    const sqlQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
+    // Update the ride as booked
+    const updateQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
 
-    db.query(sqlQuery, [rideId], (err, results) => {
+    db.query(updateQuery, [rideId], (err, updateResults) => {
         if (err) {
             console.error('Error updating ride:', err);
-            return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
+            return res.status(500).json({ 
+                success: false, 
+                message: 'Failed to book the ride. Please try again later.' 
+            });
         }
 
-        const mailOptions = {
-            from: 'hirenmehtadhruv@gmail.com', // sender address
-            to: email, // receiver's email (user who booked the ride)
-            subject: 'Ride Booking Confirmation',
-            text: 'Thank you for booking your ride with us. Your ride is confirmed!'
-          };
+        // Ensure the ride was successfully updated
+        if (updateResults.affectedRows === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Ride not found. Unable to book.' 
+            });
+        }
+
+        // Retrieve the ride details after booking
+        const selectQuery = 'SELECT * FROM rides WHERE id = ?';
         
-          // Send the email
-          transporter.sendMail(mailOptions, (error, info) => {
-            if (error) {
-              console.log(error);
-              res.status(500).send('Error sending confirmation email');
-            } else {
-              console.log('Email sent: ' + info.response);
-              res.status(200).send('Ride booked successfully, confirmation email sent');
+        db.query(selectQuery, [rideId], (err, rideResults) => {
+            if (err) {
+                console.error('Error fetching ride details:', err);
+                return res.status(500).json({ 
+                    success: false, 
+                    message: 'Failed to fetch ride details.' 
+                });
             }
-          });
 
-        res.json({ success: true });
+            // Ensure ride details are found
+            if (rideResults.length > 0) {
+                const ride = rideResults[0];  // Ride details (name, date, time, etc.)
+
+                // Prepare the HTML email content
+                const mailOptions = {
+                    from: 'rideshare577@gmail.com',  // sender's email address
+                    to: email,  // receiver's email (user who booked the ride)
+                    subject: 'Ride Booking Confirmation',
+                    html: `
+                        <div style="font-family: Arial, sans-serif; color: #333;">
+                            <h2 style="text-align: center; color: #4CAF50;">Ride Booking Confirmation</h2>
+                            <p>Dear Customer,</p>
+                            <p>Thank you for booking your ride with us! Your ride is confirmed with the following details:</p>
+
+                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Rider Name</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.driver_name}</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Rider Contact</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">+91 ${ride.contact_number}</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Date</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_date}</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Time</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_time}</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Pickup Location</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.meeting_location} ${ride.meeting_location_specific}</td>
+                                </tr>
+                                <tr>
+                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Dropoff Location</th>
+                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.dropoff_location}</td>
+                                </tr>
+                            </table>
+
+                            <p style="margin-top: 20px;">We hope you enjoy your ride!</p>
+
+                            <p style="font-size: 14px; color: #777;">If you have any questions or need assistance, feel free to contact us at support@rideshare577.com.</p>
+                            <p style="font-size: 14px; color: #777;">Regards,<br>RideShare Team</p>
+
+                            <footer style="text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 12px; color: #aaa;">
+                                &copy; 2024 RideShare. All Rights Reserved.
+                            </footer>
+                        </div>
+                    `
+                };
+
+                // Send the confirmation email
+                transporter.sendMail(mailOptions, (error, info) => {
+                    if (error) {
+                        console.error('Error sending email:', error);
+                        return res.status(500).json({ 
+                            success: false, 
+                            message: 'Error sending confirmation email.' 
+                        });
+                    }
+
+                    console.log('Email sent: ' + info.response);
+                    return res.status(200).json({ 
+                        success: true, 
+                        message: 'Ride booked successfully, confirmation email sent.' 
+                    });
+                });
+            } else {
+                return res.status(404).json({ 
+                    success: false, 
+                    message: 'Ride not found.' 
+                });
+            }
+        });
     });
-
-
 });
 
 // Cancel a booked ride
+// app.post('/cancel-ride', async (req, res) => {
+//     const { rideId } = req.body;
+
+//     try {
+//         // Update the ride's booked status to 0 (unbooked) based on the rideId
+//         await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
+
+//         // Send success response
+//         res.json({ message: 'Ride canceled successfully!', status: 'success' });
+//     } catch (error) {
+//         console.error('Error canceling ride:', error);
+
+//         // Send error response
+//         res.status(500).json({ message: 'Failed to cancel the ride. Please try again.', status: 'error' });
+//     }
+// });
+
 app.post('/cancel-ride', async (req, res) => {
     const { rideId } = req.body;
+    const email = req.session.email; // Assuming the email is stored in the session
+    const userId = req.session.userId; // Assuming the user ID is stored in the session
 
     try {
         // Update the ride's booked status to 0 (unbooked) based on the rideId
         await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
 
-        // Send success response
-        res.json({ message: 'Ride canceled successfully!', status: 'success' });
+        // Retrieve ride details for the email
+        const [rideDetails] = await db.promise().query('SELECT * FROM rides WHERE id = ?', [rideId]);
+
+        if (rideDetails.length > 0) {
+            const ride = rideDetails[0]; // Ride details
+
+            // Prepare email with cancellation details
+            const mailOptions = {
+                from: 'rideshare577@gmail.com',
+                to: email, // User's email who canceled the ride
+                subject: 'Ride Cancellation Confirmation',
+                html: `
+                    <div style="font-family: Arial, sans-serif; color: #333;">
+                        <h2 style="color: #E74C3C;">Ride Cancellation Notice</h2>
+                        <p>Dear <strong>${req.session.username}</strong>,</p>
+                        <p>Your ride has been successfully canceled. Here are the details:</p>
+                        <ul>
+                            <li><strong>Ride ID:</strong> ${rideId}</li>
+                            <li><strong>Driver Name:</strong> ${ride.driver_name}</li>
+                            <li><strong>Pickup Location:</strong> ${ride.meeting_location} ${ride.meeting_location_specific}</li>
+                            <li><strong>Dropoff Location:</strong> ${ride.dropoff_location}</li>
+                            <li><strong>Date:</strong> ${ride.departure_date}</li>
+                            <li><strong>Time:</strong> ${ride.departure_time}</li>
+                        </ul>
+                        <p>If you have any questions, feel free to <a href="mailto:rideshare577@gmail.com">contact us</a>.</p>
+                        <footer style="font-size: 12px; color: #777; margin-top: 20px;">
+                            &copy; 2024 RideShare. All rights reserved.
+                        </footer>
+                    </div>
+                `
+            };
+
+            // Send the cancellation email
+            transporter.sendMail(mailOptions, (error, info) => {
+                if (error) {
+                    console.log('Error sending cancellation email:', error);
+                    return res.status(500).json({ message: 'Ride canceled, but email could not be sent.', status: 'error' });
+                } else {
+                    console.log('Cancellation email sent: ', info.response);
+                    return res.status(200).json({ message: 'Ride canceled successfully, email sent!', status: 'success' });
+                }
+            });
+        } else {
+            return res.status(404).json({ message: 'Ride not found.', status: 'error' });
+        }
     } catch (error) {
         console.error('Error canceling ride:', error);
-
         // Send error response
         res.status(500).json({ message: 'Failed to cancel the ride. Please try again.', status: 'error' });
     }
 });
-
 
 
 // Contact pages
@@ -358,35 +534,48 @@ app.post('/register', async (req, res) => {
         );
 
         // Get the user_id of the newly registered user
-        const user_id = insertResult.insertId; // This gets the user ID
+        const user_id = insertResult.insertId; // Fetches the new user's ID
 
         // Prepare the email with the verification link
+        const verificationLink = `http://localhost:3000/verify?id=${user_id}`;
         const mailOptions = {
             from: 'rideshare577@gmail.com',
             to: email,
-            subject: 'For Verification at RideShare.',
-            html: '<p>Hi  <strong>' + username + '</strong></p><br/>\n' +
-                '<p>Please click on the following link to verify your account.</p>\n' +
-                '<a href="http://localhost:3000/verify?id=' + user_id + '">Verify Account</a>',
+            subject: 'RideShare Account Verification',
+            html: `
+                <div style="font-family: Arial, sans-serif; color: #333;">
+                    <h2 style="color: #4CAF50;">Welcome to RideShare, ${username}!</h2>
+                    <p>Thank you for registering with us. To activate your account, please verify your email by clicking the link below:</p>
+                    <p style="margin: 20px 0;">
+                        <a href="${verificationLink}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify My Account</a>
+                    </p>
+                    <p>If you did not request this, please ignore this email.</p>
+                    <footer style="font-size: 12px; color: #777; margin-top: 20px;">
+                        &copy; 2024 RideShare. All rights reserved.
+                    </footer>
+                </div>`
         };
 
         // Send the email
-        transporter.sendMail(mailOptions, function (error, info) {
+        transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
-                console.log('Error sending verification email:', error);
+                console.error('Error sending verification email:', error);
+                req.flash('error', 'Could not send verification email. Please try again.');
+                return res.redirect('/register');
             } else {
-                console.log('Email sent: ', info.response);
+                console.log('Verification email sent: ', info.response);
+                req.flash('success', 'Registration successful! Please check your email to verify your account.');
+                return res.redirect('/login');
             }
         });
 
-        req.flash('success', 'Registration successful! Please check your email to verify your account.');
-        res.redirect('/login');
     } catch (error) {
         console.error('Registration error:', error);
         req.flash('error', 'An error occurred during registration. Please try again.');
         res.redirect('/register');
     }
 });
+
 
 
 
