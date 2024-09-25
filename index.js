@@ -197,6 +197,74 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
                 return res.status(500).json({ success: false, message: 'Failed to offer a ride.' });
             }
 
+            const mailOptions = {
+                from: 'rideshare577@gmail.com', // Your email here
+                to: req.session.email, // Assuming user's email is stored in session
+                subject: 'Ride Offer Confirmation',
+                html: `
+                    <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; border-radius: 10px; border: 1px solid #ddd;">
+                        <h2 style="background-color: #FF9B22; color: white; text-align: center; padding: 10px; border-radius: 10px 10px 0 0;">Ride Offer Confirmation</h2>
+                        
+                        <div style="background-color: #ffffff; padding: 20px; border-radius: 0 0 10px 10px;">
+                            <h3 style="color: #333;">Your ride has been successfully offered!</h3>
+                            <p style="font-size: 16px; color: #555;">Thank you for offering your ride! Below are the details of your ride:</p>
+                            
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold; width: 30%;">Driver Name:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${driver_name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Vehicle:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${vehicle_type_name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Seats Available:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${seat}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Meeting Location:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${meeting_location_name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Drop-off Location:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${dropoff_location_name}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Departure Date:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${departure_date}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Departure Time:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${departure_time}</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Contact Number:</td>
+                                    <td style="padding: 10px; border: 1px solid #ddd;">${contact_number}</td>
+                                </tr>
+                            </table>
+            
+                            <div style="text-align: center; margin-top: 20px;">
+                                <a href="https://yourrideshareapp.com/myrides" style="background-color: #FF9B22; color: white; padding: 10px 20px; text-decoration: none; font-size: 16px; border-radius: 5px;">View My Rides</a>
+                            </div>
+            
+                            <p style="font-size: 14px; color: #777; margin-top: 20px;">If you have any questions or need further assistance, feel free to <a href="https://yourrideshareapp.com/contact" style="color: #FF9B22;">contact us</a>.</p>
+                            
+                            <p style="font-size: 12px; color: #aaa; text-align: center; margin-top: 20px;">&copy; 2024 RideShare Inc. All rights reserved.</p>
+                        </div>
+                    </div>
+                `
+            };
+            
+
+            transporter.sendMail(mailOptions, (emailErr, info) => {
+                if (emailErr) {
+                    console.error('Error sending email:', emailErr);
+                } else {
+                    console.log('Email sent: ' + info.response);
+                }
+            });
+
             return res.json({ success: true, message: 'Ride offered successfully!', redirectUrl: '/myrides' });
         });
     });
@@ -305,50 +373,53 @@ app.post('/book', isAuthenticated, (req, res) => {
                     to: email,  // receiver's email (user who booked the ride)
                     subject: 'Ride Booking Confirmation',
                     html: `
-                        <div style="font-family: Arial, sans-serif; color: #333;">
-                            <h2 style="text-align: center; color: #4CAF50;">Ride Booking Confirmation</h2>
-                            <p>Dear Customer,</p>
-                            <p>Thank you for booking your ride with us! Your ride is confirmed with the following details:</p>
-
-                            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Rider Name</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.driver_name}</td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Rider Contact</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">+91 ${ride.contact_number}</td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Date</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_date}</td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Time</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_time}</td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Pickup Location</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.meeting_location} ${ride.meeting_location_specific}</td>
-                                </tr>
-                                <tr>
-                                    <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Dropoff Location</th>
-                                    <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.dropoff_location}</td>
-                                </tr>
-                            </table>
-
-                            <p style="margin-top: 20px;">We hope you enjoy your ride!</p>
-
-                            <p style="font-size: 14px; color: #777;">If you have any questions or need assistance, feel free to contact us at support@rideshare577.com.</p>
-                            <p style="font-size: 14px; color: #777;">Regards,<br>RideShare Team</p>
-
+                        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; background-color: #f4f4f4; border-radius: 10px; border: 1px solid #ddd;">
+                            <h2 style="background-color: #FF9B22; color: white; text-align: center; padding: 10px; border-radius: 10px 10px 0 0;">Ride Booking Confirmation</h2>
+                            
+                            <div style="background-color: #ffffff; padding: 20px; border-radius: 0 0 10px 10px;">
+                                <p style="font-size: 16px; color: #555;">Dear Customer,</p>
+                                <p style="font-size: 16px; color: #555;">Thank you for booking your ride with us! Your ride is confirmed with the following details:</p>
+                
+                                <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd; width: 30%;">Rider Name</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.driver_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Rider Contact</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">+91 ${ride.contact_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Date</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_date}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Ride Time</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.departure_time}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Pickup Location</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.meeting_location} ${ride.meeting_location_specific}</td>
+                                    </tr>
+                                    <tr>
+                                        <th style="text-align: left; padding: 8px; border-bottom: 1px solid #ddd;">Dropoff Location</th>
+                                        <td style="padding: 8px; border-bottom: 1px solid #ddd;">${ride.dropoff_location}</td>
+                                    </tr>
+                                </table>
+                
+                                <p style="font-size: 16px; color: #555; margin-top: 20px;">We hope you enjoy your ride!</p>
+                
+                                <p style="font-size: 14px; color: #777;">If you have any questions or need assistance, feel free to contact us at support@rideshare577.com.</p>
+                                <p style="font-size: 14px; color: #777;">Regards,<br>RideShare Team</p>
+                            </div>
+                
                             <footer style="text-align: center; margin-top: 30px; padding-top: 10px; border-top: 1px solid #ddd; font-size: 12px; color: #aaa;">
                                 &copy; 2024 RideShare. All Rights Reserved.
                             </footer>
                         </div>
                     `
                 };
-
+                
                 // Send the confirmation email
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
