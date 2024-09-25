@@ -33,7 +33,7 @@ app.use(flash());
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'dhruv2004',
+    password: 'Neel12345',
     database: 'ride_sharing'
 });
 
@@ -257,43 +257,7 @@ app.post('/find-ride', isAuthenticated,(req, res) => {
     });
 });
 
-// Booking a ride - Protected Route
-// app.post('/book', isAuthenticated, (req, res) => {
-//     const rideId = req.body.rideId;
-//     const email = req.session.email;
-//     console.log("Hi");
 
-//     const sqlQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
-
-//     db.query(sqlQuery, [rideId], (err, results) => {
-//         if (err) {
-//             console.error('Error updating ride:', err);
-//             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
-//         }
-
-//         const mailOptions = {
-//             from: 'rideshare577@gmail.com', // sender address
-//             to: email, // receiver's email (user who booked the ride)
-//             subject: 'Ride Booking Confirmation',
-//             text: 'Thank you for booking your ride with us. Your ride is confirmed! \n '
-//           };
-        
-//           // Send the email
-//           transporter.sendMail(mailOptions, (error, info) => {
-//             if (error) {
-//               console.log(error);
-//               res.status(500).send('Error sending confirmation email');
-//             } else {
-//               console.log('Email sent: ' + info.response);
-//               res.status(200).send('Ride booked successfully, confirmation email sent');
-//             }
-//           });
-
-//         res.json({ success: true });
-//     });
-
-
-// });
 
 app.post('/book', isAuthenticated, (req, res) => {
     const rideId = req.body.rideId;
@@ -411,23 +375,7 @@ app.post('/book', isAuthenticated, (req, res) => {
     });
 });
 
-// Cancel a booked ride
-// app.post('/cancel-ride', async (req, res) => {
-//     const { rideId } = req.body;
 
-//     try {
-//         // Update the ride's booked status to 0 (unbooked) based on the rideId
-//         await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
-
-//         // Send success response
-//         res.json({ message: 'Ride canceled successfully!', status: 'success' });
-//     } catch (error) {
-//         console.error('Error canceling ride:', error);
-
-//         // Send error response
-//         res.status(500).json({ message: 'Failed to cancel the ride. Please try again.', status: 'error' });
-//     }
-// });
 
 app.post('/cancel-ride', async (req, res) => {
     const { rideId } = req.body;
@@ -575,6 +523,91 @@ app.post('/register', async (req, res) => {
         res.redirect('/register');
     }
 });
+
+
+// Load environment variables from .env file
+require('dotenv').config();
+
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+// Initialize session handling with environment variable for session secret
+app.use(session({
+    secret: process.env.SESSION_SECRET,  // Use secret from .env file
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Google OAuth strategy using environment variables
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+},
+async (accessToken, refreshToken, profile, done) => {
+    try {
+        const email = profile.emails[0].value;
+
+        // Check if the user already exists in the database
+        const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+        if (existingUser.length > 0) {
+            return done(null, existingUser[0]); // User already exists, log them in
+        }
+
+        // If the user doesn't exist, create a new user
+        const username = profile.displayName;
+        const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
+        const gender = 'N/A';  // Set a default gender
+
+        const [insertResult] = await db.promise().query(
+            'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
+            [username, email, hashedPassword, gender, true]  // Set `is_verified` to true for Google OAuth
+        );
+
+        const newUser = {
+            id: insertResult.insertId,
+            username,
+            email,
+            gender
+        };
+
+        return done(null, newUser);
+    } catch (error) {
+        console.error('Error with Google Authentication:', error);
+        return done(error, null);
+    }
+}));
+
+// Serialize user to store in session
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+// Deserialize user from session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const [user] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
+        done(null, user[0]);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+// Route to initiate Google OAuth login
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Google OAuth callback route
+app.get('/auth/google/callback', passport.authenticate('google', {
+    successRedirect: '/',  // Redirect to home page on success
+    failureRedirect: '/login',  // Redirect to login on failure
+    failureFlash: true
+}));
+
+
 
 
 
