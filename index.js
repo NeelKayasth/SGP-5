@@ -286,17 +286,29 @@ function normalizeLocation(location) {
 }
 
 // Searching the ride
-app.post('/find-ride', isAuthenticated,(req, res) => {
-    const username = req.session.username
+app.post('/find-ride', isAuthenticated, (req, res) => {
+    const username = req.session.username;
 
     const meeting = req.body.meet;
     const drop = req.body.meet1;
     const date = req.body.departure_date;
+
     console.log(meeting);
     const { meet, meet1, departure_date } = req.body;
 
-    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
-    const queryParams = [];
+    // Get current local time and add 1 hour
+    const localTime = new Date(); // Current local time
+    const timeZoneOffset = localTime.getTimezoneOffset() * 60000; // Offset in milliseconds
+    const utcTime = new Date(localTime.getTime() + timeZoneOffset); // UTC time
+
+    // Add 1 hour to current time
+    // const oneHourFromNow = new Date(utcTime.getTime() + 3600000); // 3600000 ms = 1 hour
+
+    // Format departure_time as UTC to compare
+    const formattedOneHourFromNow = utcTime.toISOString().slice(11, 19).replace('T', ' ');
+
+    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0 AND departure_time > ?';
+    const queryParams = [formattedOneHourFromNow]; // Use formatted time for comparison
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -315,15 +327,23 @@ app.post('/find-ride', isAuthenticated,(req, res) => {
         queryParams.push(departure_date);
     }
 
+    console.log('Current UTC Time:', utcTime);
+    console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
+
+    console.log('SQL Query:', sqlQuery); // Log the SQL query
+    console.log('Query Params:', queryParams); // Log query parameters
+
     db.query(sqlQuery, queryParams, (err, results) => {
         if (err) {
             console.error('Error executing query:', err);
             return res.status(500).send('An error occurred while fetching rides');
         }
         const search = 'true';
-        res.render('find-ride', { username,meeting,drop,date,search,rides: results });
+        res.render('find-ride', { username, meeting, drop, date, search, rides: results });
     });
 });
+
+
 
 // Booking a ride - Protected Route
 // app.post('/book', isAuthenticated, (req, res) => {
