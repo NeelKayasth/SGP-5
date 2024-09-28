@@ -1,4 +1,4 @@
-@import url(https://fonts.googleapis.com/css?family=Dancing+Script);
+/* @import url(https://fonts.googleapis.com/css?family=Dancing+Script); */
 
 * {
     margin: 0;
@@ -58,13 +58,13 @@ body {
 
 /* Sidenav */
 .sidenav {
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.2); /* White with 50% opacity */
     color: #333;
     border-bottom-right-radius: 25px;
     height: 86%;
     left: 0;
     overflow-x: hidden;
-    padding-top: 20px;
+    padding-top: 7%;
     position: absolute;
     top: 70px;
     width: 250px;

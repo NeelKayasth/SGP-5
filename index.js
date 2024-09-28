@@ -58,13 +58,13 @@ function isAuthenticated(req, res, next) {
 app.get('/', (req, res) => {
     const username = req.session.username;
     const messages = req.flash('success'); // Retrieve flash messages
-    res.render('index', { username,messages });
+    res.render('index', { username, messages });
 });
 
 // Route to render the offer ride form - Protected Route
 app.get('/offer-ride', isAuthenticated, (req, res) => {
     const username = req.session.username;
-    res.render('offer-ride',{username});
+    res.render('offer-ride', { username });
 });
 
 // Profile Page - Protected Route
@@ -75,7 +75,7 @@ app.get('/profile', isAuthenticated, (req, res) => {
     const gender = req.session.gender;
     console.log(gender);
     console.log(contact);
-    res.render('profile',{username,email,contact,gender});
+    res.render('profile', { username, email, contact, gender });
 });
 
 // Login Page 
@@ -147,11 +147,11 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
         if (results.length > 0) {
             const lastOfferedRide = results[0];
             const lastOfferedTime = lastOfferedRide.departure_time;  // Get the previously offered ride's departure time
-            
+
             // Get the current server time
             const currentTime = new Date();
             const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 5);  // Get current time in HH:MM format
-            
+
             // Check if the current time is before or equal to the last offered ride time
             if (currentTimeHoursMinutes <= lastOfferedTime) {
                 return res.json({ success: false, message: `You cannot offer a new ride before ${lastOfferedTime}. Please wait until the time has passed.` });
@@ -255,7 +255,7 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
                     </div>
                 `
             };
-            
+
 
             transporter.sendMail(mailOptions, (emailErr, info) => {
                 if (emailErr) {
@@ -272,13 +272,13 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
 
 
 // Find ride page
-app.get('/find-ride',isAuthenticated, (req, res) => {
+app.get('/find-ride', isAuthenticated, (req, res) => {
     const username = req.session.username
     const search = 'false';
     const meeting = null;
     const drop = null;
     const date = null;
-    res.render('find-ride', { username ,meeting,drop,date,search , rides: [] });
+    res.render('find-ride', { username, meeting, drop, date, search, rides: [] });
 });
 
 function normalizeLocation(location) {
@@ -296,19 +296,19 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
     console.log(meeting);
     const { meet, meet1, departure_date } = req.body;
 
-    // Get current local time and add 1 hour
-    const localTime = new Date(); // Current local time
-    const timeZoneOffset = localTime.getTimezoneOffset() * 60000; // Offset in milliseconds
-    const utcTime = new Date(localTime.getTime() + timeZoneOffset); // UTC time
+    const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours() + 1); // Add 1 hour
+    const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 8); // Get current time in HH:MM format
 
-    // Add 1 hour to current time
-    // const oneHourFromNow = new Date(utcTime.getTime() + 3600000); // 3600000 ms = 1 hour
+    console.log(currentTimeHoursMinutes);
 
-    // Format departure_time as UTC to compare
-    const formattedOneHourFromNow = utcTime.toISOString().slice(11, 19).replace('T', ' ');
+    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
+    const queryParams = [currentTimeHoursMinutes]; // Use formatted time for comparison
 
-    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0 AND departure_time > ?';
-    const queryParams = [formattedOneHourFromNow]; // Use formatted time for comparison
+    if (departure_date === currentDate) {
+        sqlQuery += ' AND departure_time > ?';
+        queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
+    }
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -327,8 +327,8 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
         queryParams.push(departure_date);
     }
 
-    console.log('Current UTC Time:', utcTime);
-    console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
+    // console.log('Current UTC Time:', utcTime);
+    // console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
 
     console.log('SQL Query:', sqlQuery); // Log the SQL query
     console.log('Query Params:', queryParams); // Log query parameters
@@ -345,43 +345,6 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
 
 
 
-// Booking a ride - Protected Route
-// app.post('/book', isAuthenticated, (req, res) => {
-//     const rideId = req.body.rideId;
-//     const email = req.session.email;
-//     console.log("Hi");
-
-//     const sqlQuery = 'UPDATE rides SET booked = 1 WHERE id = ?';
-
-//     db.query(sqlQuery, [rideId], (err, results) => {
-//         if (err) {
-//             console.error('Error updating ride:', err);
-//             return res.status(500).json({ success: false, message: 'Failed to book the ride.' });
-//         }
-
-//         const mailOptions = {
-//             from: 'rideshare577@gmail.com', // sender address
-//             to: email, // receiver's email (user who booked the ride)
-//             subject: 'Ride Booking Confirmation',
-//             text: 'Thank you for booking your ride with us. Your ride is confirmed! \n '
-//           };
-        
-//           // Send the email
-//           transporter.sendMail(mailOptions, (error, info) => {
-//             if (error) {
-//               console.log(error);
-//               res.status(500).send('Error sending confirmation email');
-//             } else {
-//               console.log('Email sent: ' + info.response);
-//               res.status(200).send('Ride booked successfully, confirmation email sent');
-//             }
-//           });
-
-//         res.json({ success: true });
-//     });
-
-
-// });
 
 app.post('/book', isAuthenticated, (req, res) => {
     const rideId = req.body.rideId;
@@ -393,29 +356,29 @@ app.post('/book', isAuthenticated, (req, res) => {
     db.query(updateQuery, [rideId], (err, updateResults) => {
         if (err) {
             console.error('Error updating ride:', err);
-            return res.status(500).json({ 
-                success: false, 
-                message: 'Failed to book the ride. Please try again later.' 
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to book the ride. Please try again later.'
             });
         }
 
         // Ensure the ride was successfully updated
         if (updateResults.affectedRows === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Ride not found. Unable to book.' 
+            return res.status(404).json({
+                success: false,
+                message: 'Ride not found. Unable to book.'
             });
         }
 
         // Retrieve the ride details after booking
         const selectQuery = 'SELECT * FROM rides WHERE id = ?';
-        
+
         db.query(selectQuery, [rideId], (err, rideResults) => {
             if (err) {
                 console.error('Error fetching ride details:', err);
-                return res.status(500).json({ 
-                    success: false, 
-                    message: 'Failed to fetch ride details.' 
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to fetch ride details.'
                 });
             }
 
@@ -475,50 +438,34 @@ app.post('/book', isAuthenticated, (req, res) => {
                         </div>
                     `
                 };
-                
+
                 // Send the confirmation email
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         console.error('Error sending email:', error);
-                        return res.status(500).json({ 
-                            success: false, 
-                            message: 'Error sending confirmation email.' 
+                        return res.status(500).json({
+                            success: false,
+                            message: 'Error sending confirmation email.'
                         });
                     }
 
                     console.log('Email sent: ' + info.response);
-                    return res.status(200).json({ 
-                        success: true, 
-                        message: 'Ride booked successfully, confirmation email sent.' 
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Ride booked successfully, confirmation email sent.'
                     });
                 });
             } else {
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Ride not found.' 
+                return res.status(404).json({
+                    success: false,
+                    message: 'Ride not found.'
                 });
             }
         });
     });
 });
 
-// Cancel a booked ride
-// app.post('/cancel-ride', async (req, res) => {
-//     const { rideId } = req.body;
 
-//     try {
-//         // Update the ride's booked status to 0 (unbooked) based on the rideId
-//         await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
-
-//         // Send success response
-//         res.json({ message: 'Ride canceled successfully!', status: 'success' });
-//     } catch (error) {
-//         console.error('Error canceling ride:', error);
-
-//         // Send error response
-//         res.status(500).json({ message: 'Failed to cancel the ride. Please try again.', status: 'error' });
-//     }
-// });
 
 app.post('/cancel-ride', async (req, res) => {
     const { rideId } = req.body;
@@ -591,7 +538,7 @@ app.get('/contact', (req, res) => {
 app.get('/myrides', (req, res) => {
     const id = req.session.userid;
     const sql = 'SELECT * FROM rides where user_id = ?';
-    db.query(sql,[id], (err, results) => {
+    db.query(sql, [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -668,6 +615,257 @@ app.post('/register', async (req, res) => {
 });
 
 
+// // Load environment variables from .env file
+// require('dotenv').config();
+
+// const passport = require('passport');
+// const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+// // Initialize session handling with environment variable for session secret
+// app.use(session({
+//     secret: 'your-secret-key',  // Use secret from .env file
+//     resave: false,
+//     saveUninitialized: true
+// }));
+
+// app.use(passport.initialize());
+// app.use(passport.session());
+
+// // Google OAuth strategy using environment variables
+// passport.use(new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: process.env.GOOGLE_CALLBACK_URL
+// },
+// async (accessToken, refreshToken, profile, done) => {
+//     try {
+//         const email = profile.emails[0].value;
+
+//         // Check if the user already exists in the database
+//         const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+//         if (existingUser.length > 0) {
+//             return done(null, existingUser[0]); // User already exists, log them in
+//         }
+
+//         // If the user doesn't exist, create a new user
+//         const username = profile.displayName;
+//         const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
+//         const gender = 'N/A';  // Set a default gender
+
+//         const [insertResult] = await db.promise().query(
+//             'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
+//             [username, email, hashedPassword, gender, true]  // Set `is_verified` to true for Google OAuth
+//         );
+
+//         const newUser = {
+//             id: insertResult.insertId,
+//             username,
+//             email,
+//             gender
+//         };
+
+//         return done(null, newUser);
+//     } catch (error) {
+//         console.error('Error with Google Authentication:', error);
+//         return done(error, null);
+//     }
+// }));
+
+// // Serialize user to store in session
+// passport.serializeUser((user, done) => {
+//     done(null, user.id);
+// });
+
+// // Deserialize user from session
+// passport.deserializeUser(async (id, done) => {
+//     try {
+//         const [user] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
+//         done(null, user[0]);
+//     } catch (error) {
+//         done(error, null);
+//     }
+// });
+
+// // Route to initiate Google OAuth login
+// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// // Google OAuth callback route
+// app.get('/auth/google/callback', passport.authenticate('google', {
+//     successRedirect: '/',  // Redirect to home page on success
+//     failureRedirect: '/login',  // Redirect to login on failure
+//     failureFlash: true
+// }));
+
+
+require('dotenv').config();
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
+
+// Initialize session handling with environment variable for session secret
+app.use(session({
+    secret: 'your-secret-key',  // Use secret from .env file
+    resave: false,
+    saveUninitialized: true
+}));
+
+app.use(passport.initialize());
+app.use(passport.session());
+
+// Nodemailer transporter setup
+// const transporter = nodemailer.createTransport({
+//     service: 'gmail',
+//     auth: {
+//         user: process.env.EMAIL_USER,
+//         pass: process.env.EMAIL_PASS
+//     }
+// });
+
+// Google OAuth strategy using environment variables
+// passport.use(new GoogleStrategy({
+//     clientID: process.env.GOOGLE_CLIENT_ID,
+//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+//     callbackURL: process.env.GOOGLE_CALLBACK_URL
+// },
+// async (accessToken, refreshToken, profile, done) => {
+//     try {
+//         const email = profile.emails[0].value;
+
+//         // Check if the user already exists in the database
+//         const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+//         if (existingUser.length > 0) {
+//             return done(null, existingUser[0]); // User already exists, log them in
+//         }
+
+//         // If the user doesn't exist, create a new user
+//         const username = profile.displayName;
+//         const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
+//         const gender = 'N/A';  // Set a default gender
+
+//         const [insertResult] = await db.promise().query(
+//             'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
+//             [username, email, hashedPassword, gender, true]  // Set `is_verified` to true for Google OAuth
+//         );
+
+//         const newUser = {
+//             id: insertResult.insertId,
+//             username,
+//             email,
+//             gender
+//         };
+
+//         // Send verification email
+//         const verificationLink = `http://localhost:3000/verify?id=${newUser.id}`;
+//         const mailOptions = {
+//             from: process.env.EMAIL_USER,
+//             to: email,
+//             subject: 'RideShare Account Verification',
+//             html: `
+//                 <div style="font-family: Arial, sans-serif; color: #333;">
+//                     <h2 style="color: #4CAF50;">Welcome to RideShare, ${username}!</h2>
+//                     <p>Thank you for registering with us. To activate your account, please verify your email by clicking the link below:</p>
+//                     <p style="margin: 20px 0;">
+//                         <a href="${verificationLink}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify My Account</a>
+//                     </p>
+//                     <p>If you did not request this, please ignore this email.</p>
+//                     <footer style="font-size: 12px; color: #777; margin-top: 20px;">
+//                         &copy; 2024 RideShare. All rights reserved.
+//                     </footer>
+//                 </div>`
+//         };
+
+//         // Send the email
+//         transporter.sendMail(mailOptions, (error, info) => {
+//             if (error) {
+//                 console.error('Error sending verification email:', error);
+//                 return done(null, newUser); // Proceed without email if there's an error
+//             } else {
+//                 console.log('Verification email sent: ', info.response);
+//                 return done(null, newUser); // User is logged in
+//             }
+//         });
+
+//     } catch (error) {
+//         console.error('Error with Google Authentication:', error);
+//         return done(error, null);
+//     }
+// }));
+passport.use(new GoogleStrategy({
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: process.env.GOOGLE_CALLBACK_URL
+},
+    async (accessToken, refreshToken, profile, done) => {
+        try {
+            const email = profile.emails[0].value; // Get user's Google email
+            const username = profile.displayName;  // Get user's Google display name
+
+            // Check if the user is already registered in the database
+            const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+            if (existingUser.length > 0) {
+                // User exists, just log them in
+                const user = existingUser[0];
+                console.log('User found, logging in:', user);
+                done(null, user);
+            } else {
+                // Register the user since they do not exist
+                const [insertResult] = await db.promise().query(
+                    'INSERT INTO users (username, email, provider) VALUES (?, ?, ?)',
+                    [username, email, 'google'] // Save with a 'google' provider identifier
+                );
+
+                // Fetch the newly created user
+                const [newUser] = await db.promise().query('SELECT * FROM users WHERE id = ?', [insertResult.insertId]);
+                const user = newUser[0];
+                console.log('New user registered with Google:', user);
+                done(null, user);
+            }
+        } catch (error) {
+            console.error('Error in Google authentication:', error);
+            done(error, false);
+        }
+    }));
+
+// Serialize user to store in session
+passport.serializeUser((user, done) => {
+    done(null, user.id);
+});
+
+// Deserialize user from session
+passport.deserializeUser(async (id, done) => {
+    try {
+        const [user] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
+        done(null, user[0]);
+    } catch (error) {
+        done(error, null);
+    }
+});
+
+// Route to initiate Google OAuth login
+app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
+
+// Google OAuth callback route
+// After successful Google login
+app.get('/auth/google/callback', passport.authenticate('google', {
+    failureRedirect: '/login',
+    failureFlash: true
+}), (req, res) => {
+    // Set session variables from user object (from `done` callback in strategy)
+    req.session.userid = req.user.id;
+    req.session.username = req.user.username;
+    req.session.email = req.user.email;
+    req.session.gender = req.user.gender;
+
+    // Redirect to the home page
+    res.redirect('/');
+});
+
+
+
+
 
 
 
@@ -714,14 +912,14 @@ app.post("/loginadd", (req, res) => {
     });
 });
 
-app.get("/logout" ,(req,res)=>{
-    req.session.destroy((err)=>{
-        if(err){
+app.get("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
             console.error(err);
             return res.redirect('/');
-            }
-            return res.redirect('/');
-            });
+        }
+        return res.redirect('/');
+    });
 
 });
 
@@ -770,8 +968,7 @@ app.listen(3000, () => {
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // or another email service
     auth: {
-      user: 'rideshare577@gmail.com', // replace with your email
-      pass: 'rqvbraleuiykqwcc' // replace with your email password
+        user: 'rideshare577@gmail.com', // replace with your email
+        pass: 'rqvbraleuiykqwcc' // replace with your email password
     }
-  });
-  
+});
