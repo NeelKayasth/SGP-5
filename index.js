@@ -6,8 +6,10 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-
-
+const cookieParser = require('cookie-parser');
+require('dotenv').config();
+const passport = require('passport');
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const app = express();
 
 // Set the view engine to EJS
@@ -19,11 +21,15 @@ app.use(express.static(path.join(__dirname, 'public')));
 // Body parser middleware
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(cookieParser());
 // Session middleware setup
 app.use(session({
-    secret: 'your-secret-key', // Replace with a secure key
+    secret: 'your-secret-key', // Replace with a strong secret key
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    cookie: {
+        maxAge: 7 * 24 * 60 * 60 * 1000 // Example: session cookie for 1 minute (adjust as needed)
+    }
 }));
 
 // Flash message middleware
@@ -51,13 +57,20 @@ db.connect((err) => {
 });
 
 // Middleware to check if the user is authenticated
+// function isAuthenticated(req, res, next) {
+//     if (req.session.userid) {
+//         return next();
+//     }
+//     req.flash('error', 'Please log in to access this page.');
+//     res.redirect('/login');
+// }
 function isAuthenticated(req, res, next) {
-    // if (req.session.userid) {
-    //     return next();
-    // }
-    // req.flash('error', 'Please log in to access this page.');
-    // res.redirect('/login');
-    return next();
+    // Check if user ID is in session or in cookies
+    if (req.session.userid || req.cookies.userId) {
+        return next();
+    }
+    req.flash('error', 'Please log in to access this page.');
+    res.redirect('/login');
 }
 
 // Home route with flash message handling
@@ -299,22 +312,29 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
     const drop = req.body.meet1;
     const date = req.body.departure_date;
 
-    console.log(meeting);
     const { meet, meet1, departure_date } = req.body;
 
+    // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    if(date == null){
+        date = currentDate;
+    }
+
+    // Get the current time and add 1 hour
     const currentTime = new Date();
     currentTime.setHours(currentTime.getHours() + 1); // Add 1 hour
     const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 8); // Get current time in HH:MM format
 
-    console.log(currentTimeHoursMinutes);
+    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
 
-    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0 AND departure_time > ?';
-    const queryParams = [currentTimeHoursMinutes]; // Use formatted time for comparison
+    const queryParams = [];
 
-    // if (departure_date === currentDate) {
-    //     sqlQuery += ' AND departure_time > ?';
-    //     queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
-    // }
+    // Check if the user is searching for today's date
+    if (departure_date === currentDate) {
+        sqlQuery += ' AND departure_time > ?';
+        queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
+    }
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -333,9 +353,6 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
         queryParams.push(departure_date);
     }
 
-    // console.log('Current UTC Time:', utcTime);
-    // console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
-
     console.log('SQL Query:', sqlQuery); // Log the SQL query
     console.log('Query Params:', queryParams); // Log query parameters
 
@@ -345,10 +362,10 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
             return res.status(500).send('An error occurred while fetching rides');
         }
         const search = 'true';
+        console.log(date)
         res.render('find-ride', { username, meeting, drop, date, search, rides: results });
     });
 });
-
 
 
 
@@ -632,14 +649,6 @@ app.post('/register', async (req, res) => {
 
 
 
-
-require('dotenv').config();
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-
-
-
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -650,6 +659,7 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
+
 async (accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails[0].value;
@@ -773,6 +783,48 @@ app.get('/auth/google/callback', passport.authenticate('google', {
 });
 
 // Login
+// app.post("/loginadd", (req, res) => {
+//     const { email, password } = req.body;
+
+//     db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
+//         if (err) {
+//             console.error(err);
+//             req.flash('error', 'An error occurred during login. Please try again.');
+//             return res.redirect('/login');
+//         }
+
+//         if (results.length === 0) {
+//             req.flash('error', 'Email is not registered.');
+//             return res.redirect('/login');
+//         }
+
+//         const user = results[0];
+//         const hashedPassword = user.password;
+
+//         bcrypt.compare(password, hashedPassword, (err, isMatch) => {
+//             if (err) {
+//                 console.error(err);
+//                 req.flash('error', 'An error occurred during login. Please try again.');
+//                 return res.redirect('/login');
+//             }
+
+//             if (!isMatch) {
+//                 req.flash('error', 'Incorrect password.');
+//                 return res.redirect('/login');
+//             }
+
+//             req.session.userid = user.id;
+//             req.session.username = user.username;
+//             req.session.email = user.email;
+//             req.session.phone_number = user.phone_number;
+//             req.session.gender = user.gender;
+
+//             req.flash('success', 'Login successful');
+//             return res.redirect('/');
+//         });
+//     });
+// });
+
 app.post("/loginadd", (req, res) => {
     const { email, password } = req.body;
 
@@ -803,11 +855,23 @@ app.post("/loginadd", (req, res) => {
                 return res.redirect('/login');
             }
 
+            // Set session
             req.session.userid = user.id;
             req.session.username = user.username;
             req.session.email = user.email;
             req.session.phone_number = user.phone_number;
             req.session.gender = user.gender;
+
+            // Set cookies with 7 days expiration
+            const cookieOptions = {
+                maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
+                httpOnly: true, // Prevent client-side scripts from accessing the cookie
+                secure: process.env.NODE_ENV === 'production', // Use secure cookies in production
+
+            };
+
+            res.cookie('userId', user.id, cookieOptions); // Cookie for user ID
+            res.cookie('isLoggedIn', true, cookieOptions); // Cookie for logged-in status
 
             req.flash('success', 'Login successful');
             return res.redirect('/');
@@ -815,27 +879,27 @@ app.post("/loginadd", (req, res) => {
     });
 });
 
-app.get("/logout" ,(req,res)=>{
-    req.flash("success","You have successfully logged out!")
-    req.session.destroy((err)=>{
-        if(err){
-            console.error(err);
-            return res.redirect('/');
-            }
-            
-             res.redirect('/');
-            });
 
-        });
+// app.get("/logout", (req, res) => {
+//     req.session.destroy((err) => {
+//         if (err) {
+//             console.error(err);
+//             return res.redirect('/');
+//         }
+//         return res.redirect('/');
+//     });
+
+// });
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
             console.error(err);
             return res.redirect('/');
         }
+        res.clearCookie('userId'); // Clear the cookie
+        res.clearCookie('isLoggedIn'); // Clear the cookie
         return res.redirect('/');
     });
-
 });
 
 // Verification route
