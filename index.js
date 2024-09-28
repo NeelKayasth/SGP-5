@@ -38,7 +38,7 @@ app.use((req,res,next)=>{
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'dhruv2004',
+    password: 'Neel12345',
     database: 'ride_sharing'
 });
 
@@ -628,15 +628,9 @@ app.post('/register', async (req, res) => {
 });
 
 
-
-
-
-
 require('dotenv').config();
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
-
-
 
 
 app.use(passport.initialize());
@@ -649,7 +643,7 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
-<<<<<<< HEAD
+
 async (accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails[0].value;
@@ -707,7 +701,6 @@ async (accessToken, refreshToken, profile, done) => {
         return done(error, null);
     }
 }));
-=======
     async (accessToken, refreshToken, profile, done) => {
         try {
             const email = profile.emails[0].value; // Get user's Google email
@@ -738,8 +731,7 @@ async (accessToken, refreshToken, profile, done) => {
             console.error('Error in Google authentication:', error);
             done(error, false);
         }
-    }));
->>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
+    };
 
 // Serialize user to store in session
 passport.serializeUser((user, done) => {
@@ -817,18 +809,6 @@ app.post("/loginadd", (req, res) => {
     });
 });
 
-<<<<<<< HEAD
-app.get("/logout" ,(req,res)=>{
-    req.flash("success","You have successfully logged out!")
-    req.session.destroy((err)=>{
-        if(err){
-            console.error(err);
-            return res.redirect('/');
-            }
-            
-             res.redirect('/');
-            });
-=======
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -837,7 +817,6 @@ app.get("/logout", (req, res) => {
         }
         return res.redirect('/');
     });
->>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
 
 });
 
