@@ -52,11 +52,12 @@ db.connect((err) => {
 
 // Middleware to check if the user is authenticated
 function isAuthenticated(req, res, next) {
-    if (req.session.userid) {
-        return next();
-    }
-    req.flash('error', 'Please log in to access this page.');
-    res.redirect('/login');
+    // if (req.session.userid) {
+    //     return next();
+    // }
+    // req.flash('error', 'Please log in to access this page.');
+    // res.redirect('/login');
+    return next();
 }
 
 // Home route with flash message handling
