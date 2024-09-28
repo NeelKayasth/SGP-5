@@ -28,6 +28,11 @@ app.use(session({
 
 // Flash message middleware
 app.use(flash());
+app.use((req,res,next)=>{
+    res.locals.success = req.flash("success");
+    res.locals.error = req.flash("error");
+    next();
+});
 
 // MySQL connection setup
 const db = mysql.createConnection({
@@ -496,7 +501,9 @@ app.post('/cancel-ride', async (req, res) => {
                     return res.status(500).json({ message: 'Ride canceled, but email could not be sent.', status: 'error' });
                 } else {
                     console.log('Cancellation email sent: ', info.response);
-                    return res.status(200).json({ message: 'Ride canceled successfully, email sent!', status: 'success' });
+                     return res.status(200).json({ message: 'Ride canceled successfully, email sent!', status: 'success' });
+                //     req.flash('success','Ride canceled successfully, email sent!');
+                //    return  res.redirect('/myrides');
                 }
             });
         } else {
@@ -530,7 +537,7 @@ app.get('/myrides', (req, res) => {
 });
 
 // Registration
-// Registration
+
 app.post('/register', async (req, res) => {
     const { username, phone_number, email, password, gender } = req.body;
 
@@ -540,7 +547,7 @@ app.post('/register', async (req, res) => {
 
         if (existingUser.length > 0) {
             req.flash('error', 'Email is already registered.');
-            return res.redirect('/register');
+            return res.redirect('/login'); // Add return here to prevent further execution
         }
 
         // Hash the password before saving it
@@ -580,7 +587,7 @@ app.post('/register', async (req, res) => {
             if (error) {
                 console.error('Error sending verification email:', error);
                 req.flash('error', 'Could not send verification email. Please try again.');
-                return res.redirect('/register');
+                return res.redirect('/login');
             } else {
                 console.log('Verification email sent: ', info.response);
                 req.flash('success', 'Registration successful! Please check your email to verify your account.');
@@ -589,94 +596,21 @@ app.post('/register', async (req, res) => {
         });
 
     } catch (error) {
-        console.error('Registration error:', error);
-        req.flash('error', 'An error occurred during registration. Please try again.');
-        res.redirect('/register');
+        if (error.code === 'ER_DUP_ENTRY') {
+            // Handle duplicate entry error (for email or username)
+            req.flash('error', 'Email is already registered.');
+            return res.redirect('/login'); // Ensure to return here to avoid multiple responses
+        } else {
+            console.error('Registration error:', error);
+            req.flash('error', 'An error occurred during registration. Please try again.');
+            return res.redirect('/login'); // Ensure to return here too
+        }
     }
 });
 
 
-// // Load environment variables from .env file
-// require('dotenv').config();
 
-// const passport = require('passport');
-// const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-// // Initialize session handling with environment variable for session secret
-// app.use(session({
-//     secret: 'your-secret-key',  // Use secret from .env file
-//     resave: false,
-//     saveUninitialized: true
-// }));
-
-// app.use(passport.initialize());
-// app.use(passport.session());
-
-// // Google OAuth strategy using environment variables
-// passport.use(new GoogleStrategy({
-//     clientID: process.env.GOOGLE_CLIENT_ID,
-//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     callbackURL: process.env.GOOGLE_CALLBACK_URL
-// },
-// async (accessToken, refreshToken, profile, done) => {
-//     try {
-//         const email = profile.emails[0].value;
-
-//         // Check if the user already exists in the database
-//         const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
-
-//         if (existingUser.length > 0) {
-//             return done(null, existingUser[0]); // User already exists, log them in
-//         }
-
-//         // If the user doesn't exist, create a new user
-//         const username = profile.displayName;
-//         const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
-//         const gender = 'N/A';  // Set a default gender
-
-//         const [insertResult] = await db.promise().query(
-//             'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
-//             [username, email, hashedPassword, gender, true]  // Set `is_verified` to true for Google OAuth
-//         );
-
-//         const newUser = {
-//             id: insertResult.insertId,
-//             username,
-//             email,
-//             gender
-//         };
-
-//         return done(null, newUser);
-//     } catch (error) {
-//         console.error('Error with Google Authentication:', error);
-//         return done(error, null);
-//     }
-// }));
-
-// // Serialize user to store in session
-// passport.serializeUser((user, done) => {
-//     done(null, user.id);
-// });
-
-// // Deserialize user from session
-// passport.deserializeUser(async (id, done) => {
-//     try {
-//         const [user] = await db.promise().query('SELECT * FROM users WHERE id = ?', [id]);
-//         done(null, user[0]);
-//     } catch (error) {
-//         done(error, null);
-//     }
-// });
-
-// // Route to initiate Google OAuth login
-// app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
-
-// // Google OAuth callback route
-// app.get('/auth/google/callback', passport.authenticate('google', {
-//     successRedirect: '/',  // Redirect to home page on success
-//     failureRedirect: '/login',  // Redirect to login on failure
-//     failureFlash: true
-// }));
 
 
 require('dotenv').config();
@@ -684,95 +618,13 @@ const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 
-// Initialize session handling with environment variable for session secret
-app.use(session({
-    secret: 'your-secret-key',  // Use secret from .env file
-    resave: false,
-    saveUninitialized: true
-}));
+
 
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Nodemailer transporter setup
-// const transporter = nodemailer.createTransport({
-//     service: 'gmail',
-//     auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS
-//     }
-// });
 
 // Google OAuth strategy using environment variables
-// passport.use(new GoogleStrategy({
-//     clientID: process.env.GOOGLE_CLIENT_ID,
-//     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-//     callbackURL: process.env.GOOGLE_CALLBACK_URL
-// },
-// async (accessToken, refreshToken, profile, done) => {
-//     try {
-//         const email = profile.emails[0].value;
-
-//         // Check if the user already exists in the database
-//         const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
-
-//         if (existingUser.length > 0) {
-//             return done(null, existingUser[0]); // User already exists, log them in
-//         }
-
-//         // If the user doesn't exist, create a new user
-//         const username = profile.displayName;
-//         const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
-//         const gender = 'N/A';  // Set a default gender
-
-//         const [insertResult] = await db.promise().query(
-//             'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
-//             [username, email, hashedPassword, gender, true]  // Set `is_verified` to true for Google OAuth
-//         );
-
-//         const newUser = {
-//             id: insertResult.insertId,
-//             username,
-//             email,
-//             gender
-//         };
-
-//         // Send verification email
-//         const verificationLink = `http://localhost:3000/verify?id=${newUser.id}`;
-//         const mailOptions = {
-//             from: process.env.EMAIL_USER,
-//             to: email,
-//             subject: 'RideShare Account Verification',
-//             html: `
-//                 <div style="font-family: Arial, sans-serif; color: #333;">
-//                     <h2 style="color: #4CAF50;">Welcome to RideShare, ${username}!</h2>
-//                     <p>Thank you for registering with us. To activate your account, please verify your email by clicking the link below:</p>
-//                     <p style="margin: 20px 0;">
-//                         <a href="${verificationLink}" style="background-color: #4CAF50; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">Verify My Account</a>
-//                     </p>
-//                     <p>If you did not request this, please ignore this email.</p>
-//                     <footer style="font-size: 12px; color: #777; margin-top: 20px;">
-//                         &copy; 2024 RideShare. All rights reserved.
-//                     </footer>
-//                 </div>`
-//         };
-
-//         // Send the email
-//         transporter.sendMail(mailOptions, (error, info) => {
-//             if (error) {
-//                 console.error('Error sending verification email:', error);
-//                 return done(null, newUser); // Proceed without email if there's an error
-//             } else {
-//                 console.log('Verification email sent: ', info.response);
-//                 return done(null, newUser); // User is logged in
-//             }
-//         });
-
-//     } catch (error) {
-//         console.error('Error with Google Authentication:', error);
-//         return done(error, null);
-//     }
-// }));
 passport.use(new GoogleStrategy({
     clientID: process.env.GOOGLE_CLIENT_ID,
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
@@ -780,33 +632,59 @@ passport.use(new GoogleStrategy({
 },
 async (accessToken, refreshToken, profile, done) => {
     try {
-        const email = profile.emails[0].value; // Get user's Google email
-        const username = profile.displayName;  // Get user's Google display name
+        const email = profile.emails[0].value;
 
-        // Check if the user is already registered in the database
+        // Restrict login to users with `@charusat.edu.in` email domain only
+        if (!email.endsWith('@charusat.edu.in')) {
+            return done(null, false, { message: 'Only @charusat.edu.in email addresses are allowed.' });
+        }
+
+        // Check if the user already exists in the database
         const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
 
         if (existingUser.length > 0) {
-            // User exists, just log them in
-            const user = existingUser[0];
-            console.log('User found, logging in:', user);
-            done(null, user);
-        } else {
-            // Register the user since they do not exist
-            const [insertResult] = await db.promise().query(
-                'INSERT INTO users (username, email, provider) VALUES (?, ?, ?)',
-                [username, email, 'google'] // Save with a 'google' provider identifier
-            );
-
-            // Fetch the newly created user
-            const [newUser] = await db.promise().query('SELECT * FROM users WHERE id = ?', [insertResult.insertId]);
-            const user = newUser[0];
-            console.log('New user registered with Google:', user);
-            done(null, user);
+            return done(null, existingUser[0]); // User already exists, log them in
         }
+
+        // If the user doesn't exist, create a new user
+        const username = profile.displayName;
+        
+        // Check if the username already exists
+        const [usernameCheck] = await db.promise().query('SELECT * FROM users WHERE username = ?', [username]);
+
+        // Use a random password for OAuth users
+        const hashedPassword = await bcrypt.hash('random-password', 10);  // Random password for OAuth users
+        const gender = 'N/A';  // Set a default gender
+
+        // If the username already exists, append a number to make it unique
+        let uniqueUsername = username;
+        let count = 1;
+        while (usernameCheck.length > 0) {
+            uniqueUsername = `${username} (${count})`;
+            const [newCheck] = await db.promise().query('SELECT * FROM users WHERE username = ?', [uniqueUsername]);
+            if (newCheck.length === 0) {
+                break;
+            }
+            count++;
+        }
+
+        const [insertResult] = await db.promise().query(
+            'INSERT INTO users (username, email, password, gender, is_verfied) VALUES (?, ?, ?, ?, ?)',
+            [uniqueUsername, email, hashedPassword, gender, true]  // Set `is_verfied` to true for Google OAuth
+        );
+
+        const newUser = {
+            id: insertResult.insertId,
+            username: uniqueUsername,
+            email,
+            gender
+        };
+
+        return done(null, newUser); // Log in the new user
+
     } catch (error) {
-        console.error('Error in Google authentication:', error);
-        done(error, false);
+        console.error('Error with Google Authentication:', error);
+        return done(error, null);
     }
 }));
 
@@ -829,7 +707,6 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 
 // Google OAuth callback route
-// After successful Google login
 app.get('/auth/google/callback', passport.authenticate('google', {
     failureRedirect: '/login',
     failureFlash: true
@@ -843,12 +720,6 @@ app.get('/auth/google/callback', passport.authenticate('google', {
     // Redirect to the home page
     res.redirect('/');
 });
-
-
-
-
-
-
 
 // Login
 app.post("/loginadd", (req, res) => {
@@ -894,12 +765,14 @@ app.post("/loginadd", (req, res) => {
 });
 
 app.get("/logout" ,(req,res)=>{
+    req.flash("success","You have successfully logged out!")
     req.session.destroy((err)=>{
         if(err){
             console.error(err);
             return res.redirect('/');
             }
-            return res.redirect('/');
+            
+             res.redirect('/');
             });
 
 });
