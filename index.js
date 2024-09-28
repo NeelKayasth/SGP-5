@@ -307,13 +307,13 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
 
     console.log(currentTimeHoursMinutes);
 
-    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
+    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0 AND departure_time > ?';
     const queryParams = [currentTimeHoursMinutes]; // Use formatted time for comparison
 
-    if (departure_date === currentDate) {
-        sqlQuery += ' AND departure_time > ?';
-        queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
-    }
+    // if (departure_date === currentDate) {
+    //     sqlQuery += ' AND departure_time > ?';
+    //     queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
+    // }
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -649,7 +649,6 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
-<<<<<<< HEAD
 async (accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails[0].value;
@@ -707,7 +706,6 @@ async (accessToken, refreshToken, profile, done) => {
         return done(error, null);
     }
 }));
-=======
     async (accessToken, refreshToken, profile, done) => {
         try {
             const email = profile.emails[0].value; // Get user's Google email
@@ -738,8 +736,7 @@ async (accessToken, refreshToken, profile, done) => {
             console.error('Error in Google authentication:', error);
             done(error, false);
         }
-    }));
->>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
+    };
 
 // Serialize user to store in session
 passport.serializeUser((user, done) => {
@@ -817,7 +814,6 @@ app.post("/loginadd", (req, res) => {
     });
 });
 
-<<<<<<< HEAD
 app.get("/logout" ,(req,res)=>{
     req.flash("success","You have successfully logged out!")
     req.session.destroy((err)=>{
@@ -828,7 +824,8 @@ app.get("/logout" ,(req,res)=>{
             
              res.redirect('/');
             });
-=======
+
+        });
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
@@ -837,7 +834,6 @@ app.get("/logout", (req, res) => {
         }
         return res.redirect('/');
     });
->>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
 
 });
 
