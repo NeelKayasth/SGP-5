@@ -38,7 +38,7 @@ app.use((req,res,next)=>{
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Neel12345',
+    password: 'dhruv2004',
     database: 'ride_sharing'
 });
 
@@ -63,13 +63,13 @@ function isAuthenticated(req, res, next) {
 app.get('/', (req, res) => {
     const username = req.session.username;
     const messages = req.flash('success'); // Retrieve flash messages
-    res.render('index', { username,messages });
+    res.render('index', { username, messages });
 });
 
 // Route to render the offer ride form - Protected Route
 app.get('/offer-ride', isAuthenticated, (req, res) => {
     const username = req.session.username;
-    res.render('offer-ride',{username});
+    res.render('offer-ride', { username });
 });
 
 // Profile Page - Protected Route
@@ -80,7 +80,7 @@ app.get('/profile', isAuthenticated, (req, res) => {
     const gender = req.session.gender;
     console.log(gender);
     console.log(contact);
-    res.render('profile',{username,email,contact,gender});
+    res.render('profile', { username, email, contact, gender });
 });
 
 // Login Page 
@@ -152,11 +152,11 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
         if (results.length > 0) {
             const lastOfferedRide = results[0];
             const lastOfferedTime = lastOfferedRide.departure_time;  // Get the previously offered ride's departure time
-            
+
             // Get the current server time
             const currentTime = new Date();
             const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 5);  // Get current time in HH:MM format
-            
+
             // Check if the current time is before or equal to the last offered ride time
             if (currentTimeHoursMinutes <= lastOfferedTime) {
                 return res.json({ success: false, message: `You cannot offer a new ride before ${lastOfferedTime}. Please wait until the time has passed.` });
@@ -260,7 +260,7 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
                     </div>
                 `
             };
-            
+
 
             transporter.sendMail(mailOptions, (emailErr, info) => {
                 if (emailErr) {
@@ -277,13 +277,13 @@ app.post('/offer-ride', isAuthenticated, (req, res) => {
 
 
 // Find ride page
-app.get('/find-ride',isAuthenticated, (req, res) => {
+app.get('/find-ride', isAuthenticated, (req, res) => {
     const username = req.session.username
     const search = 'false';
     const meeting = null;
     const drop = null;
     const date = null;
-    res.render('find-ride', { username ,meeting,drop,date,search , rides: [] });
+    res.render('find-ride', { username, meeting, drop, date, search, rides: [] });
 });
 
 function normalizeLocation(location) {
@@ -291,17 +291,29 @@ function normalizeLocation(location) {
 }
 
 // Searching the ride
-app.post('/find-ride', isAuthenticated,(req, res) => {
-    const username = req.session.username
+app.post('/find-ride', isAuthenticated, (req, res) => {
+    const username = req.session.username;
 
     const meeting = req.body.meet;
     const drop = req.body.meet1;
     const date = req.body.departure_date;
+
     console.log(meeting);
     const { meet, meet1, departure_date } = req.body;
 
+    const currentTime = new Date();
+    currentTime.setHours(currentTime.getHours() + 1); // Add 1 hour
+    const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 8); // Get current time in HH:MM format
+
+    console.log(currentTimeHoursMinutes);
+
     let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
-    const queryParams = [];
+    const queryParams = [currentTimeHoursMinutes]; // Use formatted time for comparison
+
+    if (departure_date === currentDate) {
+        sqlQuery += ' AND departure_time > ?';
+        queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
+    }
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -320,15 +332,22 @@ app.post('/find-ride', isAuthenticated,(req, res) => {
         queryParams.push(departure_date);
     }
 
+    // console.log('Current UTC Time:', utcTime);
+    // console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
+
+    console.log('SQL Query:', sqlQuery); // Log the SQL query
+    console.log('Query Params:', queryParams); // Log query parameters
+
     db.query(sqlQuery, queryParams, (err, results) => {
         if (err) {
             console.error('Error executing query:', err);
             return res.status(500).send('An error occurred while fetching rides');
         }
         const search = 'true';
-        res.render('find-ride', { username,meeting,drop,date,search,rides: results });
+        res.render('find-ride', { username, meeting, drop, date, search, rides: results });
     });
 });
+
 
 
 
@@ -342,29 +361,29 @@ app.post('/book', isAuthenticated, (req, res) => {
     db.query(updateQuery, [rideId], (err, updateResults) => {
         if (err) {
             console.error('Error updating ride:', err);
-            return res.status(500).json({ 
-                success: false, 
-                message: 'Failed to book the ride. Please try again later.' 
+            return res.status(500).json({
+                success: false,
+                message: 'Failed to book the ride. Please try again later.'
             });
         }
 
         // Ensure the ride was successfully updated
         if (updateResults.affectedRows === 0) {
-            return res.status(404).json({ 
-                success: false, 
-                message: 'Ride not found. Unable to book.' 
+            return res.status(404).json({
+                success: false,
+                message: 'Ride not found. Unable to book.'
             });
         }
 
         // Retrieve the ride details after booking
         const selectQuery = 'SELECT * FROM rides WHERE id = ?';
-        
+
         db.query(selectQuery, [rideId], (err, rideResults) => {
             if (err) {
                 console.error('Error fetching ride details:', err);
-                return res.status(500).json({ 
-                    success: false, 
-                    message: 'Failed to fetch ride details.' 
+                return res.status(500).json({
+                    success: false,
+                    message: 'Failed to fetch ride details.'
                 });
             }
 
@@ -424,27 +443,27 @@ app.post('/book', isAuthenticated, (req, res) => {
                         </div>
                     `
                 };
-                
+
                 // Send the confirmation email
                 transporter.sendMail(mailOptions, (error, info) => {
                     if (error) {
                         console.error('Error sending email:', error);
-                        return res.status(500).json({ 
-                            success: false, 
-                            message: 'Error sending confirmation email.' 
+                        return res.status(500).json({
+                            success: false,
+                            message: 'Error sending confirmation email.'
                         });
                     }
 
                     console.log('Email sent: ' + info.response);
-                    return res.status(200).json({ 
-                        success: true, 
-                        message: 'Ride booked successfully, confirmation email sent.' 
+                    return res.status(200).json({
+                        success: true,
+                        message: 'Ride booked successfully, confirmation email sent.'
                     });
                 });
             } else {
-                return res.status(404).json({ 
-                    success: false, 
-                    message: 'Ride not found.' 
+                return res.status(404).json({
+                    success: false,
+                    message: 'Ride not found.'
                 });
             }
         });
@@ -526,7 +545,7 @@ app.get('/contact', (req, res) => {
 app.get('/myrides', (req, res) => {
     const id = req.session.userid;
     const sql = 'SELECT * FROM rides where user_id = ?';
-    db.query(sql,[id], (err, results) => {
+    db.query(sql, [id], (err, results) => {
         if (err) {
             return res.status(500).send(err);
         }
@@ -630,6 +649,7 @@ passport.use(new GoogleStrategy({
     clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     callbackURL: process.env.GOOGLE_CALLBACK_URL
 },
+<<<<<<< HEAD
 async (accessToken, refreshToken, profile, done) => {
     try {
         const email = profile.emails[0].value;
@@ -687,6 +707,39 @@ async (accessToken, refreshToken, profile, done) => {
         return done(error, null);
     }
 }));
+=======
+    async (accessToken, refreshToken, profile, done) => {
+        try {
+            const email = profile.emails[0].value; // Get user's Google email
+            const username = profile.displayName;  // Get user's Google display name
+
+            // Check if the user is already registered in the database
+            const [existingUser] = await db.promise().query('SELECT * FROM users WHERE email = ?', [email]);
+
+            if (existingUser.length > 0) {
+                // User exists, just log them in
+                const user = existingUser[0];
+                console.log('User found, logging in:', user);
+                done(null, user);
+            } else {
+                // Register the user since they do not exist
+                const [insertResult] = await db.promise().query(
+                    'INSERT INTO users (username, email, provider) VALUES (?, ?, ?)',
+                    [username, email, 'google'] // Save with a 'google' provider identifier
+                );
+
+                // Fetch the newly created user
+                const [newUser] = await db.promise().query('SELECT * FROM users WHERE id = ?', [insertResult.insertId]);
+                const user = newUser[0];
+                console.log('New user registered with Google:', user);
+                done(null, user);
+            }
+        } catch (error) {
+            console.error('Error in Google authentication:', error);
+            done(error, false);
+        }
+    }));
+>>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
 
 // Serialize user to store in session
 passport.serializeUser((user, done) => {
@@ -764,6 +817,7 @@ app.post("/loginadd", (req, res) => {
     });
 });
 
+<<<<<<< HEAD
 app.get("/logout" ,(req,res)=>{
     req.flash("success","You have successfully logged out!")
     req.session.destroy((err)=>{
@@ -774,6 +828,16 @@ app.get("/logout" ,(req,res)=>{
             
              res.redirect('/');
             });
+=======
+app.get("/logout", (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            console.error(err);
+            return res.redirect('/');
+        }
+        return res.redirect('/');
+    });
+>>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
 
 });
 
@@ -822,8 +886,7 @@ app.listen(3000, () => {
 const transporter = nodemailer.createTransport({
     service: 'Gmail', // or another email service
     auth: {
-      user: 'rideshare577@gmail.com', // replace with your email
-      pass: 'rqvbraleuiykqwcc' // replace with your email password
+        user: 'rideshare577@gmail.com', // replace with your email
+        pass: 'rqvbraleuiykqwcc' // replace with your email password
     }
-  });
-  
+});
