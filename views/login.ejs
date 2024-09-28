@@ -1,3 +1,4 @@
+<%- include("flash.ejs")  %>
 <!doctype html>
 <html lang="en">
 
@@ -193,7 +194,7 @@
                                         Enter your information to setup a new
                                         account.
                                     </p>
-                                    <form id="registration-form" action="/register" method="post" data-redirect-url="/login">
+                                    <form id="registration-form" action="/register" method="post">
 
                                         <div class="form-group">
 
@@ -400,7 +401,16 @@
                                             <button type="button"
                                                 class="btn btn-social btn-block btn-google">
                                                 Google
+<<<<<<< HEAD
+                                            </button> -->
+                                            <a href="/auth/google" class="btn btn-social btn-block btn-google">
+                                               Sign Up Google
+                                            </a>
+                                            
+                                            
+=======
                                             </button>
+>>>>>>> 394886094a109870b0cf38001c64b997c05bfab1
 
                                             <button type="button"
                                                 class="btn btn-social btn-block btn-twitter">
