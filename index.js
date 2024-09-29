@@ -56,14 +56,7 @@ db.connect((err) => {
     console.log('Connected to MySQL database.');
 });
 
-// Middleware to check if the user is authenticated
-// function isAuthenticated(req, res, next) {
-//     if (req.session.userid) {
-//         return next();
-//     }
-//     req.flash('error', 'Please log in to access this page.');
-//     res.redirect('/login');
-// }
+
 function isAuthenticated(req, res, next) {
     // Check if user ID is in session or in cookies
     if (req.session.userid || req.cookies.userId) {
@@ -778,48 +771,7 @@ app.get('/auth/google/callback', passport.authenticate('google', {
     res.redirect('/');
 });
 
-// Login
-// app.post("/loginadd", (req, res) => {
-//     const { email, password } = req.body;
 
-//     db.query('SELECT * FROM users WHERE email = ?', [email], (err, results) => {
-//         if (err) {
-//             console.error(err);
-//             req.flash('error', 'An error occurred during login. Please try again.');
-//             return res.redirect('/login');
-//         }
-
-//         if (results.length === 0) {
-//             req.flash('error', 'Email is not registered.');
-//             return res.redirect('/login');
-//         }
-
-//         const user = results[0];
-//         const hashedPassword = user.password;
-
-//         bcrypt.compare(password, hashedPassword, (err, isMatch) => {
-//             if (err) {
-//                 console.error(err);
-//                 req.flash('error', 'An error occurred during login. Please try again.');
-//                 return res.redirect('/login');
-//             }
-
-//             if (!isMatch) {
-//                 req.flash('error', 'Incorrect password.');
-//                 return res.redirect('/login');
-//             }
-
-//             req.session.userid = user.id;
-//             req.session.username = user.username;
-//             req.session.email = user.email;
-//             req.session.phone_number = user.phone_number;
-//             req.session.gender = user.gender;
-
-//             req.flash('success', 'Login successful');
-//             return res.redirect('/');
-//         });
-//     });
-// });
 
 app.post("/loginadd", (req, res) => {
     const { email, password } = req.body;
@@ -862,7 +814,7 @@ app.post("/loginadd", (req, res) => {
             const cookieOptions = {
                 maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days in milliseconds
                 httpOnly: true, // Prevent client-side scripts from accessing the cookie
-                secure: environment === 'production', // Use secure cookies in production
+                 // Use secure cookies in production
             };
 
             res.cookie('userId', user.id, cookieOptions); // Cookie for user ID
@@ -875,16 +827,7 @@ app.post("/loginadd", (req, res) => {
 });
 
 
-// app.get("/logout", (req, res) => {
-//     req.session.destroy((err) => {
-//         if (err) {
-//             console.error(err);
-//             return res.redirect('/');
-//         }
-//         return res.redirect('/');
-//     });
 
-// });
 app.get("/logout", (req, res) => {
     req.session.destroy((err) => {
         if (err) {
