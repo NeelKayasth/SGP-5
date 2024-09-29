@@ -44,7 +44,7 @@ app.use((req,res,next)=>{
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
-    password: 'Neel12345',
+    password: 'dhruv2004',
     database: 'ride_sharing'
 });
 
@@ -305,22 +305,29 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
     const drop = req.body.meet1;
     const date = req.body.departure_date;
 
-    console.log(meeting);
     const { meet, meet1, departure_date } = req.body;
 
+    // Get current date in YYYY-MM-DD format
+    const currentDate = new Date().toISOString().split('T')[0];
+
+    if(date == null){
+        date = currentDate;
+    }
+
+    // Get the current time and add 1 hour
     const currentTime = new Date();
     currentTime.setHours(currentTime.getHours() + 1); // Add 1 hour
     const currentTimeHoursMinutes = currentTime.toTimeString().slice(0, 8); // Get current time in HH:MM format
 
-    console.log(currentTimeHoursMinutes);
+    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0';
 
-    let sqlQuery = 'SELECT * FROM rides WHERE booked = 0 AND departure_time > ?';
-    const queryParams = [currentTimeHoursMinutes]; // Use formatted time for comparison
+    const queryParams = [];
 
-    // if (departure_date === currentDate) {
-    //     sqlQuery += ' AND departure_time > ?';
-    //     queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
-    // }
+    // Check if the user is searching for today's date
+    if (departure_date === currentDate) {
+        sqlQuery += ' AND departure_time > ?';
+        queryParams.push(currentTimeHoursMinutes); // Use formatted time for comparison
+    }
 
     if (meet) {
         const normalizedMeet = normalizeLocation(meet);
@@ -339,9 +346,6 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
         queryParams.push(departure_date);
     }
 
-    // console.log('Current UTC Time:', utcTime);
-    // console.log('One Hour From Now (Formatted):', formattedOneHourFromNow); // Debug output
-
     console.log('SQL Query:', sqlQuery); // Log the SQL query
     console.log('Query Params:', queryParams); // Log query parameters
 
@@ -351,10 +355,10 @@ app.post('/find-ride', isAuthenticated, (req, res) => {
             return res.status(500).send('An error occurred while fetching rides');
         }
         const search = 'true';
+        console.log(date)
         res.render('find-ride', { username, meeting, drop, date, search, rides: results });
     });
 });
-
 
 
 
