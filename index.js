@@ -842,7 +842,7 @@ app.post("/loginadd", (req, res) => {
 
         const user = results[0];
         const hashedPassword = user.password;
-
+        
         bcrypt.compare(password, hashedPassword, (err, isMatch) => {
             if (err) {
                 console.error(err);
