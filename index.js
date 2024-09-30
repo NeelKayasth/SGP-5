@@ -496,11 +496,11 @@ app.post('/cancel-ride', async (req, res) => {
     const userId = req.session.userId; // Assuming the user ID is stored in the session
 
     try {
-        // Update the ride's booked status to 0 (unbooked) based on the rideId
-        await db.promise().query('UPDATE rides SET booked = 0, user_id = NULL WHERE id = ?', [rideId]);
-
-        // Retrieve ride details for the email
         const [rideDetails] = await db.promise().query('SELECT * FROM rides WHERE id = ?', [rideId]);
+        // Update the ride's booked status to 0 (unbooked) based on the rideId
+        
+        // Retrieve ride details for the email
+        await db.promise().query('DELETE FROM rides WHERE id = ?', [rideId]);
 
         if (rideDetails.length > 0) {
             const ride = rideDetails[0]; // Ride details
@@ -851,7 +851,7 @@ app.post("/loginadd", (req, res) => {
             }
 
             if (!isMatch) {
-                req.flash('error', 'Incorrect password.');
+                // req.flash('error', 'Incorrect password.');
                 return res.redirect('/login');
             }
 

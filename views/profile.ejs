@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Profile Page</title>
 
-    <!-- Custom Css -->
-    <link rel="stylesheet" href="/styles.css"> 
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/styles.css">
 
     <!-- FontAwesome 5 -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css">
@@ -15,162 +14,207 @@
     <link rel="stylesheet" href="/assets/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/datepicker.min.css">
     <link rel="stylesheet" href="/assets/css/main.css">
+
+    <style>
+        .about-us-title {
+            font-size: 2.5rem;
+            color: #333;
+            text-align: center;
+            margin-bottom: 30px;
+        }
     
+        .about-us-card {
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            padding: 40px;
+            margin-top: 20px;
+        }
+    
+        .about-us-text {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #555;
+            margin-bottom: 20px;
+        }
+    
+        .about-us-thankyou {
+            font-size: 1.5rem;
+            color:#FF9B22;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    
+        .about-us-image-section {
+            text-align: center;
+        }
+    
+        .about-us-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+    
+        .about-us-icons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 20px;
+        }
+    
+        .about-us-icons i {
+            color: #FF9B22;
+        }
+    
+        .about-us-values {
+            margin-top: 20px;
+            font-size: 1.2rem;
+            color: #333;
+            font-weight: bold;
+        }
+    
+        .uk-grid {
+            align-items: center;
+        }
+    </style>
+    
+
+    <script>
+        function toggleSection(section) {
+            const profileSection = document.getElementById('profile-section');
+            const aboutUsSection = document.getElementById('about-us-section');
+
+            if (section === 'profile') {
+                profileSection.style.display = 'block';
+                aboutUsSection.style.display = 'none';
+            } else if (section === 'about-us') {
+                profileSection.style.display = 'none';
+                aboutUsSection.style.display = 'block';
+            }
+        }
+
+        // Show Profile by default on page load
+        window.onload = function () {
+            toggleSection('profile');
+        };
+    </script>
 </head>
 <body>
     <header class="page-header">
         <div class="page-header__scroll" data-uk-sticky>
-          <div class="uk-container">
-            <div class="page-header__inner">
-              <div class="page-header__logo">
-                <div class="logo"><a class="logo_link" href="/"><img class="logo_img" src="/assets/img/logo.png" alt="GetRider"></a></div>
-              </div>
-              <div class="page-header__menu">
-                <nav class="page-nav" data-uk-navbar="">
-                  <ul class="uk-navbar-nav">
-                    <li><a href="/find-ride"> <img src="/assets/img/search.svg" data-uk-svg alt="search">Find a Ride</a>
-                      <!-- <div class="uk-navbar-dropdown">
-                        <ul class="uk-nav uk-navbar-dropdown-nav">
-                          <li><a href="02-search-3.html">Find a Ride Result</a></li>
-                        </ul>
-                      </div> -->
-                    </li>
-                    <li><a href="/offer-ride"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Offer a Ride</a></li>
-                    <!-- <li><a href="/login"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Login</a></li> -->
-                    <% if (typeof username !== 'undefined') { %>
-                      <li><a href="/logout"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Logout</a></li>
-                  <% } else { %>
-                    <li><a href="/login"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Login</a></li>
-                  <% } %>
-                  <% if(typeof username !== 'undefined' ){ %>
-                    <!-- <li><a href="/profile"> <img src="/assets/img/car.svg" data-uk-svg alt="car">Profile</a></li> -->
-                    <li><a href="/myrides"> <img src="/assets/img/car.svg" data-uk-svg alt="car">MyRides</a></li>
-                    <% } %>
-                </nav>
-              </div>
-              <div class="page-header__phone"><a class="uk-button uk-button-danger" href="tel:3457008800" > <img src="/assets/img/call.svg" alt="call" data-uk-svg><span>92659 85686</span></a></div>
-              <div class="page-header__btn"> <a class="uk-button uk-button-danger" href="#offcanvas" data-uk-toggle data-uk-icon="menu"></a></div>
+            <div class="uk-container">
+                <div class="page-header__inner">
+                    <div class="page-header__logo">
+                        <div class="logo"><a class="logo_link" href="/"><img class="logo_img" src="/assets/img/logo.png" alt="GetRider"></a></div>
+                    </div>
+                    <div class="page-header__menu">
+                        <nav class="page-nav" data-uk-navbar>
+                            <ul class="uk-navbar-nav">
+                                <li><a href="/find-ride"><img src="/assets/img/search.svg" data-uk-svg alt="search"> Find a Ride</a></li>
+                                <li><a href="/offer-ride"><img src="/assets/img/car.svg" data-uk-svg alt="car"> Offer a Ride</a></li>
+                                <% if (typeof username !== 'undefined') { %>
+                                <li><a href="/logout"><img src="/assets/img/car.svg" data-uk-svg alt="car"> Logout</a></li>
+                                <% } else { %>
+                                <li><a href="/login"><img src="/assets/img/car.svg" data-uk-svg alt="car"> Login</a></li>
+                                <% } %>
+                                <% if (typeof username !== 'undefined') { %>
+                                <li><a href="/myrides"><img src="/assets/img/car.svg" data-uk-svg alt="car"> MyRides</a></li>
+                                <% } %>
+                            </ul>
+                        </nav>
+                    </div>
+                    <div class="page-header__phone"><a class="uk-button uk-button-danger" href="tel:3457008800"><img src="/assets/img/call.svg" alt="call" data-uk-svg><span>92659 85686</span></a></div>
+                </div>
             </div>
-          </div>
         </div>
-      </header>
-    <!-- Navbar top -->
-    <!-- <div class="navbar-top">
-        <div class="title">
-            <h1 style="color: orange; font-style:normal" >Ride - Share</h1>
-        </div> -->
-
-        <!-- Navbar -->
-        <!-- <ul>
-            <li>
-                <a href="#message">
-                    <span class="icon-count">29</span>
-                    <i class="fa fa-envelope fa-2x"></i>
-                </a>
-            </li>
-            <li>
-                <a href="#notification">
-                    <span class="icon-count">59</span>
-                    <i class="fa fa-bell fa-2x"></i>
-                </a>
-            </li>
-            <li>
-                <a href="#sign-out">
-                    <i class="fa fa-sign-out-alt fa-2x"></i>
-                </a>
-            </li>
-        </ul> -->
-        <!-- End -->
-    </div>
-    <!-- End -->
+    </header>
 
     <!-- Sidenav -->
     <div class="sidenav">
-        
-
         <div class="sidenav-url">
             <div class="url">
-                <a href="#profile" class="active">Profile</a>
+                <a href="javascript:void(0);" class="active" onclick="toggleSection('profile')">Profile</a>
                 <hr align="center">
             </div>
             <div class="url">
-                <a href="#settings">Settings</a>
+                <a href="javascript:void(0);" onclick="toggleSection('about-us')">About Us</a>
                 <hr align="center">
             </div>
         </div>
     </div>
-    <!-- End -->
+    <!-- End of Sidenav -->
 
     <!-- Main -->
     <div class="main">
-        <h2>IDENTITY</h2>
-        <div class="card">
-            <div class="card-body">
-                <i class="fa fa-pen fa-xs edit"></i>
-                <table>
-                    <tbody>
-                        <tr>
-                            <td>Name</td>
-                            <td>:</td>
-                            <td><%= username%></td>
-                        </tr>
-                        <tr>
-                            <td>Email</td>
-                            <td>:</td>
-                            <td><%= email%></td>
-                        </tr>
-                        
-                        <tr>
-                            <td>Contact</td>
-                            <td>:</td>
-                            <td>+91 <%= contact %></td>
-                        </tr>
-                       
-                        
-                    </tbody>
-                </table>
+        <!-- Profile Section (Visible by default) -->
+        <div id="profile-section">
+            <h2>IDENTITY</h2>
+            <div class="card">
+                <div class="card-body">
+                    <i class="fa fa-pen fa-xs edit"></i>
+                    <table>
+                        <tbody>
+                            <tr>
+                                <td>Name</td>
+                                <td>:</td>
+                                <td><%= username %></td>
+                            </tr>
+                            <tr>
+                                <td>Email</td>
+                                <td>:</td>
+                                <td><%= email %></td>
+                            </tr>
+                            <tr>
+                                <td>Contact</td>
+                                <td>:</td>
+                                <td>+91 <%= contact %></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
 
-        <!-- <h2>SOCIAL MEDIA</h2>
-        <div class="card">
-            <div class="card-body">
-                <i class="fa fa-pen fa-xs edit"></i>
-                <div class="social-media">
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-facebook fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-twitter fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-instagram fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-invision fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-github fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-whatsapp fa-stack-1x fa-inverse"></i>
-                    </span>
-                    <span class="fa-stack fa-sm">
-                        <i class="fas fa-circle fa-stack-2x"></i>
-                        <i class="fab fa-snapchat fa-stack-1x fa-inverse"></i>
-                    </span>
+        <!-- About Us Section (Hidden by default) -->
+        <!-- About Us Section (Hidden by default) -->
+<div id="about-us-section" style="display:none;">
+    <h2 class="about-us-title">ABOUT US</h2>
+    <div class="card about-us-card">
+        <div class="card-body">
+            <div class="uk-grid uk-child-width-1-2@s uk-grid-match" data-uk-grid>
+                <!-- Left Column: Textual Content -->
+                <div>
+                    <p class="about-us-text">
+                        Welcome to <strong>GetRider</strong>, your reliable partner for seamless and safe rides. Our mission is to connect students and individuals who need rides with those who have spare seats in their vehicles. We believe in creating a community where shared rides not only save fuel and costs but also contribute to reducing traffic and pollution.
+                    </p>
+                    <p class="about-us-text">
+                        Whether you are offering or looking for a ride, <strong>GetRider</strong> provides a platform where trust and safety are a priority. We aim to ensure that every ride is a great experience for both drivers and passengers. Join us in building a network of responsible and eco-conscious riders!
+                    </p>
+                    <p class="about-us-text">
+                        Our goal is to make transportation easier and more efficient for everyone. If you have any feedback or suggestions, feel free to reach out to us.
+                    </p>
+                    <p class="about-us-thankyou">
+                        Thank you for choosing <strong>GetRider</strong>!
+                    </p>
+                </div>
+
+                <!-- Right Column: Visual Content -->
+                <div class="about-us-image-section">
+                    <!-- <img src="/assets/img/about-us-image.jpg" alt="GetRider Team" class="about-us-image"> -->
+                    <div class="about-us-icons">
+                        <i class="fas fa-car-pool fa-3x"></i>
+                        <i class="fas fa-leaf fa-3x"></i>
+                        <i class="fas fa-handshake fa-3x"></i>
+                    </div>
+                    <p class="about-us-values">
+                        Eco-friendly Rides | Community Trust | Safe Journeys
+                    </p>
                 </div>
             </div>
-        </div> -->
+        </div>
     </div>
-    <!-- End -->
+</div>
+
+    <!-- End of Main -->
 </body>
 </html>
-
-
