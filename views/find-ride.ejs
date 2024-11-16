@@ -172,32 +172,15 @@
             <nav class="page-nav" data-uk-navbar>
               <ul class="uk-navbar-nav">
                 <li><a href="/"> <i class="bi bi-house" style="margin-right: 9px;"></i>Home</a>
-                  <!-- <div class="uk-navbar-dropdown">
-                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                      <li><a href="02-search-1.html">Find a Ride</a></li>
-                      <li><a href="02-search-2.html">Find a Ride Map</a></li>
-                      <li><a href="02-search-3.html">Find a Ride
-                          Result</a></li>
-                    </ul>
-                  </div> -->
-                </li>
-                <li><a href="/offer-ride"> <img
-                      src="/assets/img/car.svg" data-uk-svg alt="car">Offer a
-                    Ride</a></li>
-                <!-- <li><a href="03_blog-1.html"> <img
-                      src="/assets/img/news-paper.svg" data-uk-svg
-                      alt="news-paper">News</a>
-                  <div class="uk-navbar-dropdown">
-                    <ul class="uk-nav uk-navbar-dropdown-nav">
-                      <li><a href="03_blog-1.html">Blog list</a></li>
-                      <li><a href="04_blog-2.html">Blog grid</a></li>
-                      <li><a href="05_blog-post.html">Blog post</a></li>
-                    </ul>
-                  </div>
-                </li> -->
-                <!-- <li> <a href="/contact"> <img
-                      src="/assets/img/help2.svg" data-uk-svg
-                      alt="help2">Help</a></li> -->
+                  
+                  <li><a href="/offer-ride"> <i class="fas fa-car"></i> &nbsp; Offer a Ride</a></li>
+                  
+                  <% if (typeof username !== 'undefined'  ) { %>
+                    <li><a href="/logout"> <i class="fas fa-sign-out-alt"></i>&nbsp;
+                      Logout</a></li>
+                <% } else { %>
+                  <li><a href="/login"><i class="fas fa-sign-in-alt"></i>&nbsp; Login</a></li>
+                <% } %>
               </ul>
             </nav>
           </div>
@@ -444,29 +427,20 @@
             <div class="uk-margin">
               <ul class="uk-nav uk-nav-default uk-nav-parent-icon"
                 data-uk-nav>
-                <li class="uk-parent"><a href="/find-ride"> <img
-                      src="/assets/img/search.svg" data-uk-svg
-                      alt="search">Find a Ride</a>
-                  <!-- <ul class="uk-nav-sub">
-                    <li><a href="02-search-1.html">Find a Ride</a></li>
-                    <li><a href="02-search-2.html">Find a Ride Map</a></li>
-                    <li><a href="02-search-3.html">Find a Ride Result</a></li>
-                  </ul> -->
-                </li>
-                <li> <a href="/offer-ride"> <img
-                      src="/assets/img/car.svg" data-uk-svg alt="car">Offer a
-                    Ride</a></li>
-                <!-- <li><a href="#"> <img src="/assets/img/news-paper.svg"
-                      data-uk-svg alt="news-paper">News</a></li> -->
-                <li class="uk-parent"> <a href="/contact"> <img
-                      src="/assets/img/help2.svg" data-uk-svg alt="help2">Help
-                  </a>
-                  <!-- <ul class="uk-nav-sub">
-                    <li><a href="03_blog-1.html">Blog list</a></li>
-                    <li><a href="04_blog-2.html">Blog grid</a></li>
-                    <li><a href="05_blog-post.html">Blog post</a></li>
-                  </ul> -->
-                </li>
+                <li><a href="/find-ride"> <i class="fas fa-search-location"></i>&nbsp; Find a Ride</a></li>
+                <li><a href="/offer-ride"> <i class="fas fa-car"></i> &nbsp; Offer a Ride</a></li>
+                
+                <% if (typeof username !== 'undefined'  ) { %>
+                  <li><a href="/logout"> <i class="fas fa-sign-out-alt"></i>&nbsp;
+                    Logout</a></li>
+              <% } else { %>
+                <li><a href="/login"><i class="fas fa-sign-in-alt"></i>&nbsp; Login</a></li>
+              <% } %>
+              <% if(typeof username !== 'undefined' ){ %>
+                <li><a href="/profile"> <i class="fas fa-user"></i>&nbsp;
+                  Profile</a></li>
+                <li><a href="/myrides"> <i class="fas fa-car"></i>&nbsp; MyRides</a></li>
+                <% } %>
               </ul>
             </div>
           </div>
